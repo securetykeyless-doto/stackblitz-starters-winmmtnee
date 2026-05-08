@@ -196,11 +196,11 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center hover:border-purple-500/30 transition-all">
                     <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">EVM_NODE:</span>
-                    <span className="text-[10px] font-mono text-slate-300">0x0000000000000000000000000000000000000000</span>
+                    <span className="text-[10px] font-mono text-slate-300 italic">WALLET_ADDRESS_PENDING</span>
                   </div>
                   <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center hover:border-purple-500/30 transition-all">
                     <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">SOL_NODE:</span>
-                    <span className="text-[10px] font-mono text-slate-300 uppercase">SOL_ADDRESS_HERE</span>
+                    <span className="text-[10px] font-mono text-slate-300 italic">SOL_ADDRESS_PENDING</span>
                   </div>
                 </div>
               </div>
