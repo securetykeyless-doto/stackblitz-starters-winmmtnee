@@ -64,7 +64,7 @@ export default function Home() {
               <span className="text-cyan-500">HOOK</span> PROT <span className="text-xs align-top text-cyan-500/50 font-mono italic">V4.0</span>
             </div>
             
-            <div className="border border-cyan-500/30 p-[2px] bg-cyan-500/5 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+            <div className="border border-cyan-500/30 p-[2px] bg-cyan-500/5">
               <ConnectButton
                 client={client}
                 chain={base}
@@ -76,49 +76,6 @@ export default function Home() {
               />
             </div>
           </nav>
-
-          <section className="mb-32">
-            <div className="inline-block px-4 py-1 border border-cyan-500/20 text-[10px] tracking-[0.4em] text-cyan-400 mb-8 uppercase bg-cyan-500/5">
-              System_Protocol_Rules
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white/5 border border-white/5 p-8 backdrop-blur-md relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10 text-xs font-mono">LOG_TYPE: RULES</div>
-              
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <span className="text-cyan-500 font-mono font-bold">01/</span>
-                  <div className="text-sm text-slate-300 leading-relaxed">
-                    <strong className="text-white uppercase block mb-1 tracking-widest">Ownership Access</strong>
-                    To interact with the Vault, users must hold $CAISHEN tokens. Higher balance unlocks higher Tier artifacts.
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <span className="text-cyan-500 font-mono font-bold">02/</span>
-                  <div className="text-sm text-slate-300 leading-relaxed">
-                    <strong className="text-white uppercase block mb-1 tracking-widest">Liquidity Mining</strong>
-                    Staking LP tokens on Base network provides 2x speed for Artifact synchronization and rewards.
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <span className="text-cyan-500 font-mono font-bold">03/</span>
-                  <div className="text-sm text-slate-300 leading-relaxed">
-                    <strong className="text-white uppercase block mb-1 tracking-widest">Rare Artifacts</strong>
-                    Tier 3 Artifacts are limited edition. Only 100 units per cycle will be generated.
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <span className="text-cyan-500 font-mono font-bold">04/</span>
-                  <div className="text-sm text-slate-300 leading-relaxed">
-                    <strong className="text-white uppercase block mb-1 tracking-widest">Burn Protocol</strong>
-                    Every transaction within the ecosystem contributes to a 1% $CAISHEN burn, increasing scarcity.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
 
           <header className="text-center mb-16 relative">
             <h1 className="text-6xl md:text-[8.5rem] font-black mb-6 tracking-tighter uppercase italic leading-none">
@@ -132,11 +89,11 @@ export default function Home() {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-6 py-2 text-[10px] tracking-[0.3em] font-black border transition-all ${
                     activeCategory === cat 
-                    ? "bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.2)]" 
+                    ? "bg-cyan-500/20 border-cyan-400 text-cyan-300" 
                     : "border-white/10 text-slate-500 hover:text-slate-300"
                   }`}
                 >
-                  [ {cat} ]
+                  [{cat}]
                 </button>
               ))}
             </div>
@@ -161,7 +118,7 @@ export default function Home() {
                   <h3 className="text-lg font-black text-white tracking-tight uppercase italic group-hover:text-cyan-400 mb-4">{t.name}</h3>
                   <div className="flex justify-between items-center pt-4 border-t border-white/5 text-[9px] font-mono">
                     <span className="text-slate-500 uppercase italic font-bold tracking-widest">{t.tier} SECURE</span>
-                    <span className="text-cyan-500">INIT →</span>
+                    <span className="text-cyan-500">INIT</span>
                   </div>
                 </div>
               </div>
@@ -174,7 +131,7 @@ export default function Home() {
                 onClick={handleLoadMore}
                 className="px-12 py-4 border border-cyan-500/40 text-cyan-400 font-black text-[10px] tracking-[0.5em] uppercase hover:bg-cyan-500/10 transition-all"
               >
-                Load_Data_Batch [+]
+                Load_Data_Batch
               </button>
             </div>
           )}
@@ -183,8 +140,8 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
               
               <div className="space-y-4">
-                <h4 className="text-[10px] tracking-[0.4em] text-cyan-500 font-black uppercase italic">Contract_Address_Base</h4>
-                <div className="p-4 border border-white/5 bg-white/5 backdrop-blur-sm hover:border-cyan-500/30 transition-all">
+                <div className="text-[10px] tracking-[0.4em] text-cyan-500 font-black uppercase italic">VPROT_CONTRACT</div>
+                <div className="p-4 border border-white/5 bg-white/5 backdrop-blur-sm">
                   <p className="text-[11px] font-mono text-slate-400 break-all leading-relaxed">
                     0xB2057F675102F8E7a2a3f9ee9B142d22E64fB6F6
                   </p>
@@ -192,15 +149,15 @@ export default function Home() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-[10px] tracking-[0.4em] text-purple-500 font-black uppercase italic">Support_Nodes</h4>
+                <div className="text-[10px] tracking-[0.4em] text-purple-500 font-black uppercase italic">DONATION_NODES</div>
                 <div className="space-y-3">
-                  <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center hover:border-purple-500/30 transition-all">
-                    <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">EVM_NODE:</span>
-                    <span className="text-[10px] font-mono text-slate-300 italic">WALLET_ADDRESS_PENDING</span>
+                  <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center">
+                    <span className="text-[9px] font-mono text-slate-500">EVM:</span>
+                    <span className="text-[10px] font-mono text-slate-300">ВСТАВ_СВІЙ_EVM_ГМАНЕЦЬ</span>
                   </div>
-                  <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center hover:border-purple-500/30 transition-all">
-                    <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">SOL_NODE:</span>
-                    <span className="text-[10px] font-mono text-slate-300 italic">SOL_ADDRESS_PENDING</span>
+                  <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center">
+                    <span className="text-[9px] font-mono text-slate-500">SOL:</span>
+                    <span className="text-[10px] font-mono text-slate-300">ВСТАВ_СВІЙ_SOL_ГМАНЕЦЬ</span>
                   </div>
                 </div>
               </div>
