@@ -51,8 +51,7 @@ export default function Home() {
     <ThirdwebProvider>
       <div className="min-h-screen bg-[#020617] text-slate-100 font-sans selection:bg-cyan-500/30 overflow-x-hidden" suppressHydrationWarning>
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 blur-[150px] rounded-full animate-pulse"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-600/10 blur-[150px] rounded-full"></div>
+          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 blur-[150px] rounded-full"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
@@ -75,7 +74,7 @@ export default function Home() {
 
           <header className="text-center mb-16 relative">
             <h1 className="text-6xl md:text-[8.5rem] font-black mb-6 tracking-tighter uppercase italic leading-none">
-              Artifact <span className="text-transparent bg-clip-text bg-gradient-to-b from-cyan-400 to-blue-700 filter drop-shadow-[0_0_30px_rgba(6,182,212,0.4)]">Vault</span>
+              Artifact <span className="text-transparent bg-clip-text bg-gradient-to-b from-cyan-400 to-blue-700">Vault</span>
             </h1>
             <div className="flex flex-wrap justify-center gap-4 mt-12 mb-12">
               {["ALL", "TECH", "CHINA", "MEDIA"].map((cat) => (
@@ -96,13 +95,15 @@ export default function Home() {
             {filtered.slice(0, visibleCount).map((t) => (
               <div key={t.id} className="group relative bg-slate-900/40 backdrop-blur-xl border border-white/5 transition-all duration-500 hover:border-cyan-500/50 overflow-hidden">
                 <div className={`h-[240px] relative overflow-hidden bg-gradient-to-br ${t.color}`}>
-                  <div className="w-full h-full flex items-center justify-center text-5xl filter grayscale group-hover:grayscale-0 transition-all duration-700">
+                  <div className="w-full h-full flex items-center justify-center text-5xl">
                     {t.icon}
                   </div>
                 </div>
                 <div className="p-5 relative">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-[8px] font-mono text-cyan-500/50 uppercase">{t.category} // S_{t.id}</span>
+                    <span className="text-[8px] font-mono text-cyan-500/50 uppercase">
+                      {`${t.category} // S_${t.id}`}
+                    </span>
                   </div>
                   <h3 className="text-lg font-black text-white tracking-tight uppercase italic group-hover:text-cyan-400 mb-4">{t.name}</h3>
                   <div className="flex justify-between items-center pt-4 border-t border-white/5 text-[9px] font-mono">
@@ -117,21 +118,21 @@ export default function Home() {
           <footer className="mt-40 border-t border-white/5 pt-16 pb-20">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
               <div className="space-y-4">
-                <div className="text-[10px] tracking-[0.4em] text-cyan-500 font-black uppercase italic">VPROT_CONTRACT</div>
-                <div className="p-4 border border-white/5 bg-white/5 backdrop-blur-sm">
+                <div className="text-[10px] tracking-[0.4em] text-cyan-500 font-black uppercase italic text-center md:text-left">Contract_Address</div>
+                <div className="p-4 border border-white/5 bg-white/5">
                   <p className="text-[11px] font-mono text-slate-400 break-all leading-relaxed">0xB2057F675102F8E7a2a3f9ee9B142d22E64fB6F6</p>
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="text-[10px] tracking-[0.4em] text-purple-500 font-black uppercase italic">SUPPORT_NODES</div>
+                <div className="text-[10px] tracking-[0.4em] text-purple-500 font-black uppercase italic text-center md:text-left">Support_Nodes</div>
                 <div className="space-y-3">
                   <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center">
                     <span className="text-[9px] font-mono text-slate-500 uppercase">EVM:</span>
-                    <span className="text-[10px] font-mono text-slate-300">INSERT_ADDRESS_HERE</span>
+                    <span className="text-[10px] font-mono text-slate-300">0x...</span>
                   </div>
                   <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center">
                     <span className="text-[9px] font-mono text-slate-500 uppercase">SOL:</span>
-                    <span className="text-[10px] font-mono text-slate-300">INSERT_ADDRESS_HERE</span>
+                    <span className="text-[10px] font-mono text-slate-300">...</span>
                   </div>
                 </div>
               </div>
