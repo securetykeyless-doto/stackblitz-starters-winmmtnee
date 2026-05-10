@@ -1,17 +1,18 @@
 "use client";
 
 import { createThirdwebClient, defineChain, getContract } from "thirdweb";
-import { ConnectButton, MediaRenderer, useActiveAccount, useReadContract } from "thirdweb/react";
+import { ThirdwebProvider, ConnectButton, MediaRenderer, useActiveAccount, useReadContract } from "thirdweb/react";
 import { getNFTs } from "thirdweb/extensions/erc721";
 
-// Конфігурація твого проекту
+// Конфігурація
 const CLIENT_ID = "dbfc19d8605d8312fbe6c49b5d7328e7";
 const CONTRACT_ADDRESS = "0x6ef145CBBCe9201E2f6E7C127A69577701Ba5432";
 
 const client = createThirdwebClient({ clientId: CLIENT_ID });
-const chain = defineChain(8453); // Мережа Base
+const chain = defineChain(8453); // Base
 
-export default function ArtifactVault() {
+// Окремий компонент для контенту, щоб він був всередині Provider
+function VaultContent() {
   const account = useActiveAccount();
 
   const contract = getContract({
@@ -93,5 +94,14 @@ export default function ArtifactVault() {
         © 2026 Artifact Vault | Powered by Base
       </footer>
     </main>
+  );
+}
+
+// Головний компонент сторінки
+export default function ArtifactVault() {
+  return (
+    <ThirdwebProvider>
+      <VaultContent />
+    </ThirdwebProvider>
   );
 }
