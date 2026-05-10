@@ -8,7 +8,6 @@ import { getNFTs } from "thirdweb/extensions/erc721";
 const CLIENT_ID = "dbfc19d8605d8312fbe6c49b5d7328e7";
 const CONTRACT_ADDRESS = "0x6ef145CBBCe9201E2f6E7C127A69577701Ba5432";
 
-// Створюємо клієнт прямо тут, щоб не було помилок з "Module not found"
 const client = createThirdwebClient({ clientId: CLIENT_ID });
 const chain = defineChain(8453); // Мережа Base
 
@@ -21,7 +20,6 @@ export default function ArtifactVault() {
     address: CONTRACT_ADDRESS,
   });
 
-  // Завантажуємо перші 20 NFT з твого контракту
   const { data: nfts, isLoading } = useReadContract(getNFTs, {
     contract: contract,
     start: 0,
@@ -59,8 +57,7 @@ export default function ArtifactVault() {
                 borderRadius: "15px",
                 padding: "20px",
                 border: "1px solid #333",
-                textAlign: "center",
-                transition: "transform 0.2s"
+                textAlign: "center"
               }}>
                 <div style={{ borderRadius: "10px", overflow: "hidden", marginBottom: "15px" }}>
                   <MediaRenderer 
@@ -86,7 +83,7 @@ export default function ArtifactVault() {
             border: "2px dashed #222", 
             borderRadius: "30px" 
           }}>
-            <h3 style={{ color: "#444" }}>Сховище очікує на перший об'єкт</h3>
+            <h3 style={{ color: "#444" }}>Сховище очікує на перший об&apos;єкт</h3>
             <p style={{ color: "#333" }}>Дані з контракту {CONTRACT_ADDRESS.slice(0,6)}... підключено.</p>
           </div>
         )}
