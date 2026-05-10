@@ -67,7 +67,7 @@ export default function Home() {
                 theme={customTheme}
                 connectButton={{
                   label: "INITIALIZE_TERMINAL",
-                  style: { background: "transparent", color: "#22d3ee", fontSize: "10px", letterSpacing: "0.2em", fontWeight: "900", borderRadius: "px", border: "none" }
+                  style: { background: "transparent", color: "#22d3ee", fontSize: "10px", letterSpacing: "0.2em", fontWeight: "900", borderRadius: "0px", border: "none" }
                 }}
               />
             </div>
@@ -119,19 +119,19 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="text-[10px] tracking-[0.4em] text-cyan-500 font-black uppercase italic">VPROT_CONTRACT</div>
                 <div className="p-4 border border-white/5 bg-white/5 backdrop-blur-sm">
-                  <p className="text-[11px] font-mono text-slate-400 break-all">0xB2057F675102F8E7a2a3f9ee9B142d22E64fB6F6</p>
+                  <p className="text-[11px] font-mono text-slate-400 break-all leading-relaxed">0xB2057F675102F8E7a2a3f9ee9B142d22E64fB6F6</p>
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="text-[10px] tracking-[0.4em] text-purple-500 font-black uppercase italic">DONATION_NODES</div>
+                <div className="text-[10px] tracking-[0.4em] text-purple-500 font-black uppercase italic">SUPPORT_NODES</div>
                 <div className="space-y-3">
                   <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center">
-                    <span className="text-[9px] font-mono text-slate-500">EVM:</span>
+                    <span className="text-[9px] font-mono text-slate-500 uppercase">EVM:</span>
                     <span className="text-[10px] font-mono text-slate-300">INSERT_ADDRESS_HERE</span>
                   </div>
                   <div className="p-3 border border-white/5 bg-white/5 flex justify-between items-center">
-                    <span className="text-[9px] font-mono text-slate-500">SOL:</span>
-                    <span className="text-[10px] font-mono text-slate-300 uppercase">INSERT_ADDRESS_HERE</span>
+                    <span className="text-[9px] font-mono text-slate-500 uppercase">SOL:</span>
+                    <span className="text-[10px] font-mono text-slate-300">INSERT_ADDRESS_HERE</span>
                   </div>
                 </div>
               </div>
