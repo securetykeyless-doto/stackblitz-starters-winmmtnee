@@ -1,165 +1,82 @@
 "use client";
 
-import { createThirdwebClient, defineChain, getContract } from "thirdweb";
-import { ThirdwebProvider, ConnectButton, MediaRenderer, useReadContract } from "thirdweb/react";
-import { getNFTs } from "thirdweb/extensions/erc721";
+import Image from "next/image";
+import { ConnectButton, TransactionButton, useActiveAccount, useReadContract } from "thirdweb/react";
+import { client } from "./client";
+import { chain } from "./chain";
+import { getContract } from "thirdweb";
+import { claimTo } from "thirdweb/extensions/erc721";
+import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 
-// Конфігурація
-const CLIENT_ID = "dbfc19d8605d8312fbe6c49b5d7328e7";
-const CONTRACT_ADDRESS = "0x6ef145CBBCe9201E2f6E7C127A69577701Ba5432";
+export default function Home() {
+  const account = useActiveAccount();
 
-const client = createThirdwebClient({ clientId: CLIENT_ID });
-const chain = defineChain(8453); // Base Network
+  // Твої контракти
+  const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
+  const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
 
-function VaultContent() {
-  const { data: nfts, isLoading } = useReadContract(getNFTs, {
-    contract: getContract({ client, chain, address: CONTRACT_ADDRESS }),
-    start: 0,
-    count: 20,
+  const tokenContract = getContract({ client, chain, address: tokenAddress });
+  const nftContract = getContract({ client, chain, address: nftDropAddress });
+
+  // Читаємо баланс токенів користувача
+  const { data: tokenBalance } = useReadContract(getBalance, {
+    contract: tokenContract,
+    address: account?.address || "",
   });
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      backgroundColor: "#0a0a0a",
-      color: "#ffffff",
-      fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-      padding: "40px 20px",
-      position: "relative"
-    }}>
-      {/* Кнопка гаманця зверху справа */}
-      <div style={{
-        position: "absolute",
-        top: "20px",
-        right: "20px",
-        zIndex: 100
-      }}>
-        <ConnectButton client={client} chain={chain} />
-      </div>
-
-      <header style={{ textAlign: "center", marginBottom: "60px", marginTop: "40px" }}>
-        <h1 style={{ 
-          fontSize: "clamp(2.5rem, 8vw, 4.5rem)", 
-          fontWeight: "900",
-          margin: "0", 
-          letterSpacing: "6px",
-          textTransform: "uppercase",
-          color: "#fff",
-          textShadow: "0 0 15px #00d2ff, 0 0 30px #00d2ff, 0 0 45px #9d00ff"
-        }}>
-          Artifact Vault
+    <main className="p-8 flex flex-col items-center justify-center min-h-screen bg-[#050505] text-white font-sans">
+      <header className="fixed top-0 w-full p-6 flex justify-between items-center bg-black/50 backdrop-blur-md border-b border-blue-500/20 z-50">
+        <h1 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+          ARTIFACT VAULT
         </h1>
-        <p style={{ 
-          color: "#00d2ff", 
-          fontSize: "1.2rem", 
-          marginTop: "15px", 
-          letterSpacing: "3px",
-          textTransform: "uppercase",
-          opacity: 0.8
-        }}>
-          {"SECURE DIGITAL REPOSITORY"}
-        </p>
+        <ConnectButton client={client} chain={chain} theme={"dark"} />
       </header>
 
-      <section style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        {isLoading ? (
-          <p style={{ textAlign: "center", color: "#00d2ff", fontSize: "1.2rem" }}>
-            {"Syncing with Base network..."}
-          </p>
-        ) : nfts && nfts.length > 0 ? (
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "35px"
-          }}>
-            {nfts.map((nft) => (
-              <div key={nft.id.toString()} style={{
-                backgroundColor: "rgba(15, 15, 15, 0.9)",
-                borderRadius: "24px",
-                padding: "25px",
-                border: "1px solid rgba(0, 210, 255, 0.3)",
-                textAlign: "center",
-                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(157, 0, 255, 0.1)",
-                transition: "all 0.3s ease"
-              }}>
-                <div style={{ 
-                  borderRadius: "16px", 
-                  overflow: "hidden", 
-                  marginBottom: "20px",
-                  boxShadow: "0 0 15px rgba(0,0,0,0.5)",
-                  border: "1px solid #222"
-                }}>
-                  <MediaRenderer 
-                    client={client} 
-                    src={nft.metadata.image} 
-                    style={{ width: "100%", height: "auto", display: "block" }} 
-                  />
-                </div>
-                
-                <h3 style={{ 
-                  fontSize: "1.5rem", 
-                  margin: "10px 0", 
-                  color: "#fff",
-                  fontWeight: "700"
-                }}>
-                  {nft.metadata.name}
-                </h3>
-                
-                <span style={{ 
-                  fontSize: "0.8rem", 
-                  color: "#9d00ff", 
-                  backgroundColor: "rgba(157, 0, 255, 0.1)",
-                  padding: "4px 12px",
-                  borderRadius: "12px",
-                  fontWeight: "bold"
-                }}>
-                  {"ID #" + nft.id.toString()}
-                </span>
-                
-                {nft.metadata.description && (
-                  <p style={{ 
-                    fontSize: "0.95rem", 
-                    color: "#aaa", 
-                    marginTop: "15px",
-                    lineHeight: "1.6"
-                  }}>
-                    {nft.metadata.description}
-                  </p>
-                )}
+      <div className="max-w-4xl w-full mt-24">
+        <div className="bg-gradient-to-b from-zinc-900 to-black p-1 rounded-3xl border border-white/10 shadow-[0_0_50px_-12px_rgba(59,130,246,0.5)]">
+          <div className="bg-black rounded-[22px] p-8 md:p-12 text-center">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+              Unlock the Digital History
+            </h2>
+            <p className="text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
+              Preserve your legacy with unique artifacts. Exchange your 
+              <span className="text-blue-400 font-mono ml-2">$AVT</span> to claim exclusive NFTs.
+            </p>
+
+            {account && (
+              <div className="mb-8 p-4 bg-white/5 rounded-xl border border-white/5 inline-block">
+                <p className="text-sm text-zinc-500 uppercase tracking-widest mb-1">Your Balance</p>
+                <p className="text-2xl font-mono font-bold text-blue-400">
+                  {tokenBalance ? (Number(tokenBalance) / 1e18).toLocaleString() : "0"} AVT
+                </p>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ 
-            textAlign: "center", 
-            padding: "100px 20px", 
-            border: "2px dashed rgba(0, 210, 255, 0.2)", 
-            borderRadius: "32px" 
-          }}>
-            <h3 style={{ color: "#333", fontSize: "1.8rem" }}>{"Vault is currently empty"}</h3>
-            <p style={{ color: "#222" }}>{"Connect to contract: " + CONTRACT_ADDRESS.slice(0,6) + "..."}</p>
-          </div>
-        )}
-      </section>
+            )}
 
-      <footer style={{ 
-        textAlign: "center", 
-        marginTop: "120px", 
-        paddingBottom: "40px",
-        color: "#333", 
-        fontSize: "0.9rem",
-        letterSpacing: "2px"
-      }}>
-        {"© 2026 ARTIFACT VAULT | BASE ECOSYSTEM"}
-      </footer>
-    </div>
-  );
-}
+            <div className="flex flex-col items-center gap-4">
+              <TransactionButton
+                transaction={() => 
+                  claimTo({
+                    contract: nftContract,
+                    to: account?.address || "",
+                    quantity: 1n,
+                  })
+                }
+                onTransactionConfirmed={(tx) => alert("Artifact Unlocked! Check your wallet.")}
+                onError={(err) => alert("Error: " + err.message)}
+                className="!bg-blue-600 hover:!bg-blue-500 !text-white !font-bold !py-4 !px-12 !rounded-full !text-xl !transition-all !shadow-lg !shadow-blue-500/20"
+              >
+                Claim Artifact
+              </TransactionButton>
+              <p className="text-xs text-zinc-600">Cost per claim: defined in your contract settings</p>
+            </div>
+          </div>
+        </div>
 
-export default function ArtifactVault() {
-  return (
-    <ThirdwebProvider>
-      <VaultContent />
-    </ThirdwebProvider>
+        <footer className="mt-12 text-center text-zinc-700 text-sm">
+          &copy; 2026 ARTIFACT VAULT LABS | POWERED BY BASE
+        </footer>
+      </div>
+    </main>
   );
 }
