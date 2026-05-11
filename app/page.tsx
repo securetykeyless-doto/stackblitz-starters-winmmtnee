@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ConnectButton, TransactionButton, useActiveAccount, useReadContract } from "thirdweb/react";
 import { client } from "./client";
 import { chain } from "./chain";
-import { getContract, prepareContractCall } from "thirdweb";
+import { getContract } from "thirdweb";
 import { approve, allowance } from "thirdweb/extensions/erc20";
 import { claimTo } from "thirdweb/extensions/erc721";
 import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
@@ -18,13 +18,11 @@ export default function Home() {
   const tokenContract = getContract({ client, chain, address: tokenAddress });
   const nftContract = getContract({ client, chain, address: nftDropAddress });
 
-  // Отримання балансу $AVT
   const { data: tokenBalance, isLoading: isBalanceLoading } = useReadContract(getBalance, {
     contract: tokenContract,
     address: account?.address || "0x0000000000000000000000000000000000000000",
   });
 
-  // Перевірка дозволу (Allowance)
   const { data: currentAllowance } = useReadContract(allowance, {
     contract: tokenContract,
     owner: account?.address || "0x0000000000000000000000000000000000000000",
@@ -39,7 +37,8 @@ export default function Home() {
     { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: 750000, img: "/4.png" },
   ];
 
-  const priceInWei = BigInt(750000) * BigInt(10 ** 18);
+  // Використовуємо string для уникнення Type Error при білді
+  const priceInWei = (BigInt(750000) * BigInt(10 ** 18)).toString();
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200 overflow-x-hidden">
@@ -76,8 +75,8 @@ export default function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => {
-            // Перевіряємо, чи дозволено контракту списувати токени
-            const needsApprove = !currentAllowance || currentAllowance < priceInWei;
+            // Порівнюємо allowance (BigInt) з ціною
+            const needsApprove = !currentAllowance || currentAllowance < BigInt(priceInWei);
 
             return (
               <div key={artifact.id} className="group bg-white border border-slate-200 rounded-[32px] p-4 transition-all hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-1">
@@ -102,14 +101,12 @@ export default function Home() {
                   <TransactionButton
                     transaction={() => {
                       if (needsApprove) {
-                        // Якщо дозволу немає — викликаємо Approve
                         return approve({
                           contract: tokenContract,
                           spender: nftDropAddress,
-                          amount: priceInWei,
+                          amount: priceInWei, // Передаємо як string
                         });
                       } else {
-                        // Якщо дозвіл є — викликаємо Claim
                         return claimTo({
                           contract: nftContract,
                           to: account?.address || "",
@@ -119,15 +116,15 @@ export default function Home() {
                     }}
                     onTransactionConfirmed={() => {
                       if (needsApprove) {
-                        alert("Дозвіл отримано! Тепер натисніть Claim ще раз, щоб купити артефакт.");
+                        alert("Approve successful! Now you can Claim your artifact.");
                         window.location.reload();
                       } else {
-                        alert(`Успішно! ${artifact.name} додано до вашої колекції.`);
+                        alert(`Success! ${artifact.name} added to your collection.`);
                       }
                     }}
                     onError={(err) => {
-                      console.error("Помилка:", err);
-                      alert("Транзакція не вдалася. Перевірте баланс або консоль.");
+                      console.error("Error Detail:", err);
+                      alert("Transaction failed. Check your balance or console.");
                     }}
                     className={`!font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all active:!scale-95 ${
                       needsApprove ? "!bg-orange-500 hover:!bg-orange-600" : "!bg-blue-600 hover:!bg-blue-700"
