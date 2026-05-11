@@ -12,12 +12,14 @@ import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 export default function Home() {
   const account = useActiveAccount();
 
+  // CONTRACT ADDRESSES
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
 
   const tokenContract = getContract({ client, chain, address: tokenAddress });
   const nftContract = getContract({ client, chain, address: nftDropAddress });
 
+  // READ DATA
   const { data: tokenBalance, isLoading: isBalanceLoading } = useReadContract(getBalance, {
     contract: tokenContract,
     address: account?.address || "0x0000000000000000000000000000000000000000",
@@ -33,20 +35,24 @@ export default function Home() {
     contract: nftContract,
   });
 
-  const artifacts = [
-    { id: 0, name: "Jellyfish Artifact", category: "Zone", price: 750000, img: "/0.png" },
-    { id: 1, name: "Creaking Heart", category: "Minecraft", price: 750000, img: "/1.png" },
-    { id: 2, name: "Vice City Hype", category: "GTA VI", price: 750000, img: "/2.png" },
-    { id: 3, name: "Blue Energy Sculpture", category: "Music", price: 750000, img: "/3.png" },
-    { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: 750000, img: "/4.png" },
-  ];
-
+  // CONSTANTS
   const priceRaw = "750000";
   const priceInWei = BigInt(750000) * BigInt(10 ** 18);
+  const claimedCount = totalClaimed ? Number(totalClaimed) : 0;
+
+  // DYNAMIC GRID GENERATION
+  // Shows all sold items + next 12 available items in the vault
+  const displayLimit = claimedCount + 12;
+  const artifacts = Array.from({ length: displayLimit }, (_, i) => ({
+    id: i,
+    name: `Artifact #${String(i).padStart(4, '0')}`,
+    category: i < 100 ? "Legacy" : "Sector B",
+    img: `/${i}.png`,
+  }));
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(tokenAddress);
-    alert("Contract address copied!");
+    alert("Contract copied!");
   };
 
   return (
@@ -64,95 +70,89 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-6">
             <div className="hidden md:flex gap-4">
-              <a href="https://t.me/your_telegram" target="_blank" className="text-slate-400 hover:text-blue-600 transition-colors">Telegram</a>
-              <a href="https://twitter.com/your_twitter" target="_blank" className="text-slate-400 hover:text-blue-400 transition-colors">Twitter</a>
+              <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors">Telegram</a>
+              <a href="#" className="text-slate-400 hover:text-blue-400 transition-colors">Twitter</a>
             </div>
             <ConnectButton client={client} chain={chain} theme="light" />
           </div>
         </nav>
 
-        {/* Hero Section */}
+        {/* Header */}
         <div className="text-center max-w-4xl mx-auto mb-20">
-          <h1 className="text-7xl md:text-9xl font-black mb-8 tracking-tighter text-slate-900 uppercase">The Vault</h1>
+          <h1 className="text-7xl md:text-9xl font-black mb-8 tracking-tighter text-slate-900 uppercase italic">The Vault</h1>
           
-          <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm mb-10 text-center">
+          <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm mb-10">
             <p className="text-xl text-slate-600 font-medium leading-relaxed mb-8">
-              Welcome to the <span className="text-blue-600 font-bold">Artifact Vault</span> &mdash; a decentralized digital archive on Base. 
-              Each artifact is a unique NFT, claimable exclusively with <span className="font-bold text-slate-900">$AVT</span> tokens.
+              Decentralized archive on Base. Sequential NFT claims powered by <span className="font-bold text-slate-900">$AVT</span>.
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 text-left border-t border-slate-100 pt-10">
               <div>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-3">Step 1</span>
-                <p className="text-xs font-bold text-slate-500 leading-relaxed">
-                  Acquire $AVT on Uniswap (Base) using the official contract address below.
-                </p>
+                <p className="text-xs font-bold text-slate-500 italic">Get $AVT on Uniswap.</p>
               </div>
               <div>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-3">Step 2</span>
-                <p className="text-xs font-bold text-slate-500 leading-relaxed">
-                  Connect your wallet and click &quot;Approve&quot; to authorize the transaction.
-                </p>
+                <p className="text-xs font-bold text-slate-500 italic">Connect &amp; Approve $AVT.</p>
               </div>
               <div>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-3">Step 3</span>
-                <p className="text-xs font-bold text-slate-500 leading-relaxed">
-                  Click &quot;Claim&quot; to receive your artifact. Items are distributed in a strict sequential order.
-                </p>
+                <p className="text-xs font-bold text-slate-500 italic">Claim next available Artifact.</p>
               </div>
             </div>
           </div>
 
-          {/* Contract Address Bar */}
-          <div className="inline-flex flex-col md:flex-row items-center gap-4 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Official Token Contract:</span>
+          {/* Contract Address */}
+          <div className="inline-flex flex-col md:flex-row items-center gap-4 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-xl transition-transform hover:scale-[1.02]">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Contract (Base):</span>
             <code className="font-mono text-sm text-blue-300 break-all">{tokenAddress}</code>
-            <button 
-              onClick={copyToClipboard}
-              className="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-all"
-              title="Copy Address"
-            >
+            <button onClick={copyToClipboard} className="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-all">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
             </button>
           </div>
         </div>
 
-        {/* Grid */}
+        {/* Dynamic Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => {
-            const isSold = totalClaimed !== undefined && BigInt(artifact.id) < totalClaimed;
+            const isSold = artifact.id < claimedCount;
+            const isNext = artifact.id === claimedCount;
             const needsApprove = !currentAllowance || currentAllowance < priceInWei;
 
             return (
-              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'grayscale-[0.2]' : 'hover:shadow-2xl hover:-translate-y-1'}`}>
+              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'opacity-80' : isNext ? 'ring-2 ring-blue-500 shadow-2xl' : 'opacity-40'}`}>
                 <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100">
-                  <Image src={artifact.img} alt={artifact.name} fill className={`object-cover transition-transform duration-700 ${!isSold && 'group-hover:scale-110'}`} />
+                  <Image 
+                    src={artifact.img} 
+                    alt={artifact.name} 
+                    fill 
+                    className={`object-cover transition-transform duration-700 ${isNext && 'group-hover:scale-110'}`} 
+                  />
                   {isSold && (
                     <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px] flex items-center justify-center">
-                      <span className="text-white font-black text-2xl tracking-tighter border-2 border-white px-4 py-1 rotate-[-12deg]">SOLD OUT</span>
+                      <span className="text-white font-black text-2xl tracking-tighter border-2 border-white px-4 py-1 rotate-[-12deg]">ARCHIVED</span>
                     </div>
                   )}
-                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase">
-                    {artifact.category}
-                  </div>
                 </div>
 
-                <div className="px-2 mb-6 text-center">
-                  <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                    {isSold ? "Archived in Vault" : "Available to Claim"}
-                  </p>
+                <div className="px-2 mb-6 flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-black text-slate-800 uppercase leading-none">{artifact.name}</h3>
+                    <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1">{artifact.category}</p>
+                  </div>
+                  {!isSold && !isNext && (
+                    <div className="p-2 bg-slate-100 rounded-full">
+                      <svg className="w-3 h-3 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-black">Price</p>
-                    <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} $AVT</p>
-                  </div>
+                  <p className="font-mono font-bold text-xs text-slate-900 tracking-tighter">750,000 $AVT</p>
                   
                   {isSold ? (
-                    <button disabled className="bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl text-xs cursor-not-allowed uppercase">Owned</button>
-                  ) : (
+                    <span className="text-[10px] font-black text-slate-400 uppercase">Stored</span>
+                  ) : isNext ? (
                     <TransactionButton
                       transaction={() => {
                         if (needsApprove) {
@@ -162,10 +162,12 @@ export default function Home() {
                         }
                       }}
                       onTransactionConfirmed={() => window.location.reload()}
-                      className={`!font-bold !py-2 !px-4 !rounded-xl !text-xs ${needsApprove ? "!bg-orange-500" : "!bg-blue-600"} !text-white uppercase`}
+                      className={`!font-bold !py-2 !px-4 !rounded-xl !text-[10px] ${needsApprove ? "!bg-orange-500" : "!bg-blue-600"} !text-white uppercase`}
                     >
                       {needsApprove ? "Approve" : "Claim"}
                     </TransactionButton>
+                  ) : (
+                    <span className="text-[10px] font-black text-slate-300 uppercase italic">Locked</span>
                   )}
                 </div>
               </div>
@@ -173,14 +175,14 @@ export default function Home() {
           })}
         </div>
 
-        {/* Footer */}
+        {/* Social Footer */}
         <footer className="mt-40 pb-12 text-center border-t border-slate-200 pt-20">
-          <div className="flex justify-center gap-12 mb-10 text-slate-400 font-bold text-xs uppercase tracking-widest">
-            <a href="https://t.me/your_telegram" target="_blank" className="hover:text-blue-600 transition-colors">Telegram</a>
-            <a href="https://twitter.com/your_twitter" target="_blank" className="hover:text-blue-400 transition-colors">Twitter (X)</a>
+          <div className="flex justify-center gap-12 mb-10 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em]">
+            <a href="#" className="hover:text-blue-600 transition-colors">Telegram</a>
+            <a href="#" className="hover:text-blue-400 transition-colors">Twitter</a>
             <a href={`https://basescan.org/address/${nftDropAddress}`} target="_blank" className="hover:text-slate-900 transition-colors">Basescan</a>
           </div>
-          <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">Artifact Vault Protocol &copy; 2026 | Built on Base</p>
+          <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.5em]">Vault Protocol &copy; 2026 | Digital Archive System</p>
         </footer>
       </div>
     </main>
