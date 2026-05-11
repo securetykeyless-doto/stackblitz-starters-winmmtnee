@@ -1,4 +1,5 @@
 import { defineChain } from "thirdweb";
-import { base } from "thirdweb/chains";
 
-export const chain = defineChain(base);
+// Використовуємо чіткий ID мережі Base (8453)
+// Це найнадійніший спосіб, щоб SDK точно знало, де шукати твої токени
+export const chain = defineChain(8453);
