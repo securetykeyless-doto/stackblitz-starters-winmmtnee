@@ -37,8 +37,10 @@ export default function Home() {
     { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: 750000, img: "/4.png" },
   ];
 
-  // Використовуємо string для уникнення Type Error при білді
-  const priceInWei = (BigInt(750000) * BigInt(10 ** 18)).toString();
+  // ВИПРАВЛЕННЯ: Тепер передаємо число БЕЗ множення на 10^18, 
+  // бо Thirdweb SDK зробить це автоматично на основі decimals токена.
+  const priceRaw = "750000"; 
+  const priceInWei = (BigInt(750000) * BigInt(10**18)); // Для порівняння з allowance
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200 overflow-x-hidden">
@@ -50,7 +52,7 @@ export default function Home() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         <nav className="flex justify-between items-center mb-20 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
           <div className="flex items-center gap-3 pl-2">
-            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200 text-sm">AV</div>
+            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-sm">AV</div>
             <span className="text-sm font-black tracking-widest uppercase text-slate-800">Artifact Vault</span>
           </div>
           <div className="flex items-center gap-4">
@@ -75,8 +77,8 @@ export default function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => {
-            // Порівнюємо allowance (BigInt) з ціною
-            const needsApprove = !currentAllowance || currentAllowance < BigInt(priceInWei);
+            // Перевіряємо allowance
+            const needsApprove = !currentAllowance || currentAllowance < priceInWei;
 
             return (
               <div key={artifact.id} className="group bg-white border border-slate-200 rounded-[32px] p-4 transition-all hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-1">
@@ -104,7 +106,7 @@ export default function Home() {
                         return approve({
                           contract: tokenContract,
                           spender: nftDropAddress,
-                          amount: priceInWei, // Передаємо як string
+                          amount: priceRaw, // Передаємо "750000" як строку без нулів
                         });
                       } else {
                         return claimTo({
@@ -116,15 +118,15 @@ export default function Home() {
                     }}
                     onTransactionConfirmed={() => {
                       if (needsApprove) {
-                        alert("Approve successful! Now you can Claim your artifact.");
+                        alert("Approve successful! Click Claim to buy.");
                         window.location.reload();
                       } else {
-                        alert(`Success! ${artifact.name} added to your collection.`);
+                        alert(`Success! ${artifact.name} is yours.`);
                       }
                     }}
                     onError={(err) => {
-                      console.error("Error Detail:", err);
-                      alert("Transaction failed. Check your balance or console.");
+                      console.error("Error:", err);
+                      alert("Transaction failed. Check balance or decimals.");
                     }}
                     className={`!font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all active:!scale-95 ${
                       needsApprove ? "!bg-orange-500 hover:!bg-orange-600" : "!bg-blue-600 hover:!bg-blue-700"
