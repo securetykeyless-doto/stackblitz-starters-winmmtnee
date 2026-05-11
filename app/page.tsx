@@ -124,7 +124,7 @@ export default function Home() {
                 className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all duration-500
                   ${isSold ? 'opacity-60 grayscale-[0.5]' : 
                     isNext ? 'ring-2 ring-blue-500 shadow-2xl scale-[1.02] z-10' : 
-                    'opacity-10 grayscale'}`} // <--- Набагато прозоріші заблоковані фото
+                    'opacity-70 grayscale'}`} // <--- Набагато прозоріші заблоковані фото
               >
                 <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100">
                   <Image 
