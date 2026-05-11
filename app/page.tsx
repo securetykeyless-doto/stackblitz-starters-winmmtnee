@@ -4,7 +4,8 @@ import Image from "next/image";
 import { ConnectButton, TransactionButton, useActiveAccount, useReadContract } from "thirdweb/react";
 import { client } from "./client";
 import { chain } from "./chain";
-import { getContract, prepareContractCall } from "thirdweb";
+import { getContract } from "thirdweb";
+import { claimTo } from "thirdweb/extensions/erc721";
 import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 
 export default function Home() {
@@ -60,7 +61,7 @@ export default function Home() {
             DIGITAL <span className="text-blue-600">VAULT</span>
           </h1>
           <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
-            Archive the pulse of 2026. Use your $AVT to claim exclusive, verifiable artifacts.
+            Archive the pulse of 2026. Use your $AVT to claim exclusive artifacts.
           </p>
         </div>
 
@@ -87,28 +88,21 @@ export default function Home() {
                 
                 <TransactionButton
                   transaction={() => 
-                    prepareContractCall({
+                    claimTo({
                       contract: nftContract,
-                      method: "function claim(address receiver, uint256 quantity, address currency, uint256 pricePerToken, (uint256 pricePerToken, address currency, uint256 quantityLimitPerWallet, bytes32[] proof) allowlistProof, bytes data) payable",
-                      params: [
-                        account?.address || "", 
-                        BigInt(1), 
-                        tokenAddress, 
-                        BigInt(750000) * BigInt(10**18),
-                        {
-                          pricePerToken: BigInt(0),
-                          currency: "0x0000000000000000000000000000000000000000",
-                          quantityLimitPerWallet: BigInt(0),
-                          proof: [],
-                        }, 
-                        "0x"
-                      ],
+                      to: account?.address || "",
+                      quantity: BigInt(1),
                     })
                   }
                   onTransactionConfirmed={() => alert(`Success! ${artifact.name} is now in your Vault.`)}
                   onError={(err) => {
-                    console.error("Full Error:", err);
-                    alert("Transaction failed. Check console for details.");
+                    console.error("Full Error Details:", err);
+                    // Якщо помилка містить "allowance", пояснюємо користувачу
+                    if (err.message.includes("allowance")) {
+                      alert("Спочатку підтвердіть дозвіл (Approve) у MetaMask.");
+                    } else {
+                      alert("Транзакція відхилена. Перевірте консоль (F12) для деталей.");
+                    }
                   }}
                   className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all active:!scale-95"
                 >
