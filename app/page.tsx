@@ -60,45 +60,52 @@ export default function Home() {
         <nav className="flex justify-between items-center mb-16 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
           <div className="flex items-center gap-3 pl-2">
             <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-sm">AV</div>
-            <span className="text-sm font-black tracking-widest uppercase text-slate-800">Artifact Vault</span>
+            <span className="text-sm font-black tracking-widest uppercase text-slate-800 pl-2">Artifact Vault</span>
           </div>
-          <div className="flex items-center gap-4">
-            <a href="https://t.me/your_telegram" target="_blank" className="hidden md:block text-slate-400 hover:text-blue-600 transition-colors">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.65 6.31-2.74 7.58-3.27 3.61-1.51 4.35-1.78 4.84-1.79.11 0 .35.03.5.16.13.12.16.28.18.39.02.07.02.2.01.24z"/></svg>
-            </a>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex gap-4">
+              <a href="https://t.me/your_telegram" target="_blank" className="text-slate-400 hover:text-blue-600 transition-colors">Telegram</a>
+              <a href="https://twitter.com/your_twitter" target="_blank" className="text-slate-400 hover:text-blue-400 transition-colors">Twitter</a>
+            </div>
             <ConnectButton client={client} chain={chain} theme="light" />
           </div>
         </nav>
 
-        {/* Main Header & Description */}
+        {/* Hero Section */}
         <div className="text-center max-w-4xl mx-auto mb-20">
-          <h1 className="text-7xl md:text-9xl font-black mb-8 tracking-tighter text-slate-900 uppercase">Vault</h1>
+          <h1 className="text-7xl md:text-9xl font-black mb-8 tracking-tighter text-slate-900 uppercase">The Vault</h1>
           
-          <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm mb-10">
-            <p className="text-xl text-slate-600 font-medium leading-relaxed mb-6">
-              Ласкаво просимо до <span className="text-blue-600 font-bold">Artifact Vault</span> — першого децентралізованого архіву на базі мережі Base. 
-              Тут кожен артефакт є унікальним NFT, доступним для викупу виключно за токени <span className="font-bold text-slate-900">$AVT</span>.
+          <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm mb-10 text-center">
+            <p className="text-xl text-slate-600 font-medium leading-relaxed mb-8">
+              Welcome to the <span className="text-blue-600 font-bold">Artifact Vault</span> &mdash; a decentralized digital archive on Base. 
+              Each artifact is a unique NFT, claimable exclusively with <span className="font-bold text-slate-900">$AVT</span> tokens.
             </p>
             
-            <div className="grid md:grid-cols-3 gap-6 text-left border-t border-slate-100 pt-8">
+            <div className="grid md:grid-cols-3 gap-8 text-left border-t border-slate-100 pt-10">
               <div>
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-2">Крок 1</span>
-                <p className="text-xs font-bold text-slate-500">Придбайте $AVT на Uniswap (Base), скопіювавши контракт нижче.</p>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-3">Step 1</span>
+                <p className="text-xs font-bold text-slate-500 leading-relaxed">
+                  Acquire $AVT on Uniswap (Base) using the official contract address below.
+                </p>
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-2">Крок 2</span>
-                <p className="text-xs font-bold text-slate-500">Підключіть свій гаманець та натисніть "Approve" для дозволу на транзакцію.</p>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-3">Step 2</span>
+                <p className="text-xs font-bold text-slate-500 leading-relaxed">
+                  Connect your wallet and click &quot;Approve&quot; to authorize the transaction.
+                </p>
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-2">Крок 3</span>
-                <p className="text-xs font-bold text-slate-500">Натисніть "Claim" та заберіть свій артефакт. Вони видаються суворо по черзі.</p>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.2em] block mb-3">Step 3</span>
+                <p className="text-xs font-bold text-slate-500 leading-relaxed">
+                  Click &quot;Claim&quot; to receive your artifact. Items are distributed in a strict sequential order.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Token Contract Block */}
-          <div className="inline-flex flex-col md:flex-row items-center gap-4 bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Token Contract (Base):</span>
+          {/* Contract Address Bar */}
+          <div className="inline-flex flex-col md:flex-row items-center gap-4 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-xl">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Official Token Contract:</span>
             <code className="font-mono text-sm text-blue-300 break-all">{tokenAddress}</code>
             <button 
               onClick={copyToClipboard}
@@ -110,7 +117,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Gallery */}
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => {
             const isSold = totalClaimed !== undefined && BigInt(artifact.id) < totalClaimed;
@@ -132,10 +139,16 @@ export default function Home() {
 
                 <div className="px-2 mb-6 text-center">
                   <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                    {isSold ? "Archived in Vault" : "Available to Claim"}
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
-                  <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} $AVT</p>
+                  <div>
+                    <p className="text-[10px] text-slate-400 uppercase font-black">Price</p>
+                    <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} $AVT</p>
+                  </div>
                   
                   {isSold ? (
                     <button disabled className="bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl text-xs cursor-not-allowed uppercase">Owned</button>
@@ -160,13 +173,14 @@ export default function Home() {
           })}
         </div>
 
-        {/* Footer with Socials */}
+        {/* Footer */}
         <footer className="mt-40 pb-12 text-center border-t border-slate-200 pt-20">
-          <div className="flex justify-center gap-8 mb-10 text-slate-400">
-            <a href="https://t.me/your_telegram" target="_blank" className="hover:text-blue-600 font-bold text-xs uppercase tracking-widest transition-colors">Telegram</a>
-            <a href="https://twitter.com/your_twitter" target="_blank" className="hover:text-blue-400 font-bold text-xs uppercase tracking-widest transition-colors">Twitter (X)</a>
+          <div className="flex justify-center gap-12 mb-10 text-slate-400 font-bold text-xs uppercase tracking-widest">
+            <a href="https://t.me/your_telegram" target="_blank" className="hover:text-blue-600 transition-colors">Telegram</a>
+            <a href="https://twitter.com/your_twitter" target="_blank" className="hover:text-blue-400 transition-colors">Twitter (X)</a>
+            <a href={`https://basescan.org/address/${nftDropAddress}`} target="_blank" className="hover:text-slate-900 transition-colors">Basescan</a>
           </div>
-          <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">Artifact Vault Protocol &copy; 2026</p>
+          <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">Artifact Vault Protocol &copy; 2026 | Built on Base</p>
         </footer>
       </div>
     </main>
