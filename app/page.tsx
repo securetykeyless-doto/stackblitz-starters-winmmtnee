@@ -6,9 +6,8 @@ import { client } from "./client";
 import { chain } from "./chain";
 import { getContract } from "thirdweb";
 import { approve, allowance } from "thirdweb/extensions/erc20";
-import { claimTo, ownerOf, getTotalClaimedSupply } from "thirdweb/extensions/erc721";
+import { claimTo, nextTokenIdToMint } from "thirdweb/extensions/erc721";
 import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
-import { useState, useEffect } from "react";
 
 export default function Home() {
   const account = useActiveAccount();
@@ -30,8 +29,10 @@ export default function Home() {
     spender: nftDropAddress,
   });
 
-  // Отримуємо кількість уже проданих NFT
-  const { data: totalClaimed } = useReadContract(getTotalClaimedSupply, {
+  // Отримуємо ID наступного токена, який буде випущено.
+  // Якщо nextTokenId = 1, значить ID 0 вже продано.
+  // Якщо ми хочемо знати статус конкретного ID, це найнадійніший спосіб для NFT Drop.
+  const { data: nextId } = useReadContract(nextTokenIdToMint, {
     contract: nftContract,
   });
 
@@ -56,7 +57,7 @@ export default function Home() {
         <nav className="flex justify-between items-center mb-20 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
           <div className="flex items-center gap-3 pl-2">
             <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-sm">AV</div>
-            <span className="text-sm font-black tracking-widest uppercase text-slate-800">Artifact Vault</span>
+            <span className="text-sm font-black tracking-widest uppercase text-slate-800 pl-2">Artifact Vault</span>
           </div>
           <div className="flex items-center gap-4">
             {account && (
@@ -75,17 +76,18 @@ export default function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => {
-            // Логіка перевірки: якщо ID артефакту менше ніж кількість проданих, значить він SOLD
-            const isSold = totalClaimed !== undefined && BigInt(artifact.id) < totalClaimed;
+            // Перевірка: якщо ID артефакту менше за nextId, значить він вже викарбований (проданий)
+            // Важливо: в NFT Drop токени завжди продаються по черзі: 0, потім 1, потім 2...
+            const isSold = nextId !== undefined && BigInt(artifact.id) < nextId;
             const needsApprove = !currentAllowance || currentAllowance < priceInWei;
 
             return (
-              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'opacity-75 grayscale-[0.5]' : 'hover:shadow-2xl hover:-translate-y-1'}`}>
+              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'opacity-75 grayscale-[0.3]' : 'hover:shadow-2xl hover:-translate-y-1'}`}>
                 <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100">
                   <Image src={artifact.img} alt={artifact.name} fill className={`object-cover transition-transform duration-700 ${!isSold && 'group-hover:scale-110'}`} />
                   {isSold && (
-                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center">
-                      <span className="text-white font-black text-2xl tracking-tighter border-2 border-white px-4 py-1 rotate-[-12deg]">SOLD OUT</span>
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[1px] flex items-center justify-center">
+                      <span className="text-white font-black text-2xl tracking-tighter border-2 border-white px-4 py-1 rotate-[-12deg]">SOLD</span>
                     </div>
                   )}
                   <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase">
@@ -96,7 +98,7 @@ export default function Home() {
                 <div className="px-2 mb-6">
                   <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                    {isSold ? "Archived in Vault" : "Available to Claim"}
+                    {isSold ? "Stored in Blockchain" : "Verified Artifact"}
                   </p>
                 </div>
 
@@ -107,8 +109,8 @@ export default function Home() {
                   </div>
                   
                   {isSold ? (
-                    <button disabled className="bg-slate-200 text-slate-400 font-bold py-2 px-4 rounded-xl text-xs cursor-not-allowed">
-                      Owned
+                    <button disabled className="bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl text-xs cursor-not-allowed">
+                      Sold Out
                     </button>
                   ) : (
                     <TransactionButton
