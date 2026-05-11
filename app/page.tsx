@@ -1,123 +1,130 @@
 "use client";
 
-import Image from "next/image";
-import { ConnectButton, TransactionButton, useActiveAccount, useReadContract } from "thirdweb/react";
-import { client } from "./client";
-import { chain } from "./chain";
-import { getContract } from "thirdweb";
-import { claimTo } from "thirdweb/extensions/erc721";
-import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
+import { createThirdwebClient, getContract } from "thirdweb";
+import { ThirdwebProvider, ConnectButton, useActiveAccount, useReadContract } from "thirdweb/react";
+import { base } from "thirdweb/chains";
+import { useState, useEffect } from "react";
 
-export default function Home() {
+// 1. Твій Клієнт (вкажи свій Client ID з Thirdweb Dashboard)
+const client = createThirdwebClient({
+  clientId: "ТВІЙ_CLIENT_ID_ТУТ", 
+});
+
+// 2. Адреси контрактів
+const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
+const nftContractAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
+
+export default function ArtifactVault() {
   const account = useActiveAccount();
-
-  // Your Contract Addresses
-  const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
-  const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
-
-  const tokenContract = getContract({ client, chain, address: tokenAddress });
-  const nftContract = getContract({ client, chain, address: nftDropAddress });
-
-  const { data: tokenBalance } = useReadContract(getBalance, {
-    contract: tokenContract,
-    address: account?.address || "",
+  
+  // Контракт токена $AVT
+  const tokenContract = getContract({
+    client,
+    chain: base,
+    address: tokenAddress,
   });
 
-  const artifacts = [
-    { id: 0, name: "Jellyfish Artifact", category: "Zone", price: 1000, img: "/0.png" },
-    { id: 1, name: "Creaking Heart", category: "Minecraft", price: 2500, img: "/1.png" },
-    { id: 2, name: "Vice City Hype", category: "GTA VI", price: 5000, img: "/2.png" },
-    { id: 3, name: "Blue Energy Sculpture", category: "Music", price: 1500, img: "/3.png" },
-    { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: 10000, img: "/4.png" },
-  ];
+  // Читання балансу з блокчейну
+  const { data: rawBalance, isLoading: isBalanceLoading, refetch: refetchBalance } = useReadContract({
+    contract: tokenContract,
+    method: "function balanceOf(address) view returns (uint256)",
+    params: [account?.address || ""],
+  });
+
+  // Оновлюємо баланс автоматично при зміні аккаунта
+  useEffect(() => {
+    if (account?.address) {
+      refetchBalance();
+    }
+  }, [account?.address, refetchBalance]);
+
+  // Форматування балансу (Decimals 18)
+  const formattedBalance = rawBalance 
+    ? (Number(rawBalance) / 10 ** 18).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) 
+    : "0";
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200 overflow-x-hidden">
-      {/* Light Gradient Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.15),rgba(255,255,255,0))]" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-[120px] opacity-50" />
-      </div>
+    <ThirdwebProvider>
+      <main style={styles.main}>
+        {/* Хедер з підключенням гаманця */}
+        <header style={styles.header}>
+          <div style={styles.logo}>ARTIFACT VAULT</div>
+          <ConnectButton 
+            client={client} 
+            chain={base}
+            connectModal={{ size: "compact" }}
+          />
+        </header>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
-        <nav className="flex justify-between items-center mb-20 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
-          <div className="flex items-center gap-3 pl-2">
-            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200">
-              {/* BRAND LOGO */}
-              <span className="font-mono tracking-tighter text-sm">AV</span>
-            </div>
-            <span className="text-sm font-black tracking-widest uppercase text-slate-800">Artifact Vault</span>
+        {/* Секція балансу */}
+        <section style={styles.balanceSection}>
+          <div style={styles.balanceCard}>
+            <p style={styles.label}>Your $AVT Balance</p>
+            <h2 style={styles.amount}>
+              {account ? (isBalanceLoading ? "Loading..." : `${formattedBalance} $AVT`) : "Connect Wallet"}
+            </h2>
           </div>
-          <div className="flex items-center gap-4">
-            {account && (
-              <div className="px-4 py-2 bg-blue-50 border border-blue-100 rounded-full font-mono text-sm text-blue-600 font-bold">
-                {tokenBalance ? (Number(tokenBalance) / 1e18).toLocaleString() : "0"} $AVT
-              </div>
-            )}
-            <ConnectButton client={client} chain={chain} theme="light" />
-          </div>
-        </nav>
+        </section>
 
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-24">
-          <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight text-slate-900">
-            DIGITAL <span className="text-blue-600">VAULT</span>
-          </h1>
-          <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
-            Archive the pulse of 2025. Use your $AVT to claim exclusive, verifiable artifacts from gaming, music, and cinema.
-          </p>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {artifacts.map((artifact) => (
-            <div key={artifact.id} className="group bg-white border border-slate-200 rounded-[32px] p-4 transition-all hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-1">
-              <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100 border border-slate-100">
-                <Image 
-                  src={artifact.img} 
-                  alt={artifact.name} 
-                  fill 
-                  className="object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
-                <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase tracking-tighter">
-                  {artifact.category}
-                </div>
-              </div>
-
-              <div className="px-2 mb-6">
-                <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Base Network &bull; Verified</p>
-              </div>
-
-              <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
-                <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-black">Cost</p>
-                  <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} <span className="text-blue-600">$AVT</span></p>
-                </div>
-                <TransactionButton
-                  transaction={() => 
-                    claimTo({
-                      contract: nftContract,
-                      to: account?.address || "",
-                      quantity: BigInt(1),
-                    })
-                  }
-                  onTransactionConfirmed={() => alert(`Success! ${artifact.name} is now in your Vault.`)}
-                  className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all active:!scale-95"
-                >
-                  Claim
-                </TransactionButton>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <footer className="mt-32 pt-10 border-t border-white/[0.03] text-center text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em]">
-          Artifact Vault Labs &copy; 2026 | Powered by Base L2
-        </footer>
-      </div>
-    </main>
+        {/* Секція NFT (Тут буде твій Embed від Thirdweb або кастомні картки) */}
+        <section style={styles.nftGrid}>
+          <iframe
+            src={`https://embed.thirdweb.com/erc721/${nftContractAddress}?chain=8453&clientId=ТВІЙ_CLIENT_ID_ТУТ&theme=dark&primaryColor=blue`}
+            width="100%"
+            height="600px"
+            style={{ border: "none", borderRadius: "15px" }}
+          />
+        </section>
+      </main>
+    </ThirdwebProvider>
   );
 }
+
+const styles = {
+  main: {
+    backgroundColor: "#0a0a0a",
+    minHeight: "100vh",
+    color: "#ffffff",
+    fontFamily: "Arial, sans-serif",
+    padding: "20px",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "40px",
+  },
+  logo: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    letterSpacing: "2px",
+    color: "#3b82f6",
+  },
+  balanceSection: {
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: "40px",
+  },
+  balanceCard: {
+    background: "linear-gradient(145deg, #1e1e1e, #121212)",
+    padding: "20px 40px",
+    borderRadius: "20px",
+    border: "1px solid #333",
+    textAlign: "center" as const,
+    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+  },
+  label: {
+    color: "#888",
+    fontSize: "14px",
+    marginBottom: "5px",
+  },
+  amount: {
+    fontSize: "32px",
+    margin: 0,
+    color: "#fff",
+  },
+  nftGrid: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+  }
+};
