@@ -4,8 +4,7 @@ import Image from "next/image";
 import { ConnectButton, TransactionButton, useActiveAccount, useReadContract } from "thirdweb/react";
 import { client } from "./client";
 import { chain } from "./chain";
-import { getContract } from "thirdweb";
-import { claimTo } from "thirdweb/extensions/erc721";
+import { getContract, prepareContractCall } from "thirdweb";
 import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 
 export default function Home() {
@@ -25,11 +24,11 @@ export default function Home() {
   });
 
   const artifacts = [
-    { id: 0, name: "Jellyfish Artifact", category: "Zone", price: "750,000", img: "/0.png" },
-    { id: 1, name: "Creaking Heart", category: "Minecraft", price: "750,000", img: "/1.png" },
-    { id: 2, name: "Vice City Hype", category: "GTA VI", price: "750,000", img: "/2.png" },
-    { id: 3, name: "Blue Energy Sculpture", category: "Music", price: "750,000", img: "/3.png" },
-    { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: "750,000", img: "/4.png" },
+    { id: 0, name: "Jellyfish Artifact", category: "Zone", price: 750000, img: "/0.png" },
+    { id: 1, name: "Creaking Heart", category: "Minecraft", price: 750000, img: "/1.png" },
+    { id: 2, name: "Vice City Hype", category: "GTA VI", price: 750000, img: "/2.png" },
+    { id: 3, name: "Blue Energy Sculpture", category: "Music", price: 750000, img: "/3.png" },
+    { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: 750000, img: "/4.png" },
   ];
 
   return (
@@ -52,7 +51,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             {account && (
               <div className="px-4 py-2 bg-blue-50 border border-blue-100 rounded-full font-mono text-sm text-blue-600 font-bold">
-                {isBalanceLoading ? "Loading..." : 
+                {isBalanceLoading ? "Scanning..." : 
                  tokenBalance !== undefined ? (Number(tokenBalance) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 0 }) : "0"} $AVT
               </div>
             )}
@@ -66,7 +65,7 @@ export default function Home() {
             DIGITAL <span className="text-blue-600">VAULT</span>
           </h1>
           <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
-            Архів пульсу 2026 року. Використовуйте $AVT, щоб отримати ексклюзивні артефакти.
+            Archive the pulse of 2026. Use your $AVT to claim exclusive, verifiable artifacts.
           </p>
         </div>
 
@@ -93,22 +92,29 @@ export default function Home() {
 
               <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
                 <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-black">Вартість</p>
-                  <p className="font-mono font-bold text-slate-900">{artifact.price} <span className="text-blue-600">$AVT</span></p>
+                  <p className="text-[10px] text-slate-400 uppercase font-black">Cost</p>
+                  <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} <span className="text-blue-600">$AVT</span></p>
                 </div>
                 
                 <TransactionButton
                   transaction={() => 
-                    claimTo({
+                    prepareContractCall({
                       contract: nftContract,
-                      to: account?.address || "",
-                      quantity: BigInt(1),
+                      method: "function claim(address receiver, uint256 quantity, address currency, uint256 pricePerToken, (bytes32[] proof, uint256 quantityLimitPerWallet, uint256 pricePerToken, address currency) allowlistProof, bytes data) payable",
+                      params: [
+                        account?.address || "", 
+                        BigInt(1), 
+                        tokenAddress, 
+                        BigInt(750000) * BigInt(10**18), // Ціна x 10^18 decimals
+                        [[], BigInt(0), BigInt(0), "0x0000000000000000000000000000000000000000"], 
+                        "0x"
+                      ],
                     })
                   }
-                  onTransactionConfirmed={() => alert(`Успішно! ${artifact.name} тепер у вашому Vault.`)}
+                  onTransactionConfirmed={() => alert(`Success! ${artifact.name} is now in your Vault.`)}
                   onError={(err) => {
-                    console.error("Помилка клейму:", err);
-                    alert("Помилка транзакції. Перевірте баланс ETH на газ або дозволи.");
+                    console.error("Full Error Detail:", err);
+                    alert("Transaction failed. Check console (F12) for details.");
                   }}
                   className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all active:!scale-95"
                 >
