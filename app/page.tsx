@@ -80,14 +80,17 @@ export default function Home() {
             const needsApprove = !currentAllowance || currentAllowance < priceInWei;
 
             return (
-              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'opacity-75 grayscale-[0.5]' : 'hover:shadow-2xl hover:-translate-y-1'}`}>
+              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'grayscale-[0.2]' : 'hover:shadow-2xl hover:-translate-y-1'}`}>
                 <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100">
                   <Image src={artifact.img} alt={artifact.name} fill className={`object-cover transition-transform duration-700 ${!isSold && 'group-hover:scale-110'}`} />
+                  
                   {isSold && (
-                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center">
+                    /* Виправлено затемнення: зроблено набагато легшим */
+                    <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px] flex items-center justify-center">
                       <span className="text-white font-black text-2xl tracking-tighter border-2 border-white px-4 py-1 rotate-[-12deg]">SOLD OUT</span>
                     </div>
                   )}
+                  
                   <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase">
                     {artifact.category}
                   </div>
@@ -107,7 +110,7 @@ export default function Home() {
                   </div>
                   
                   {isSold ? (
-                    <button disabled className="bg-slate-200 text-slate-400 font-bold py-2 px-4 rounded-xl text-xs cursor-not-allowed">
+                    <button disabled className="bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl text-xs cursor-not-allowed">
                       Owned
                     </button>
                   ) : (
