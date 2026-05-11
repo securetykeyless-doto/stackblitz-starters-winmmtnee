@@ -29,9 +29,7 @@ export default function Home() {
     spender: nftDropAddress,
   });
 
-  // Отримуємо ID наступного токена, який буде випущено.
-  // Якщо nextTokenId = 1, значить ID 0 вже продано.
-  // Якщо ми хочемо знати статус конкретного ID, це найнадійніший спосіб для NFT Drop.
+  // Дізнаємося, який токен зараз купується (черга)
   const { data: nextId } = useReadContract(nextTokenIdToMint, {
     contract: nftContract,
   });
@@ -69,49 +67,40 @@ export default function Home() {
           </div>
         </nav>
 
-        <div className="text-center max-w-3xl mx-auto mb-24">
-          <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight text-slate-900 uppercase">Vault</h1>
-          <p className="text-slate-500 font-medium tracking-widest uppercase text-sm">Digital Archive 2026</p>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => {
-            // Перевірка: якщо ID артефакту менше за nextId, значить він вже викарбований (проданий)
-            // Важливо: в NFT Drop токени завжди продаються по черзі: 0, потім 1, потім 2...
+            // ТОЧНА ЛОГІКА СТАТУСУ:
             const isSold = nextId !== undefined && BigInt(artifact.id) < nextId;
+            const isCurrentQueue = nextId !== undefined && BigInt(artifact.id) === nextId;
             const needsApprove = !currentAllowance || currentAllowance < priceInWei;
 
             return (
-              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'opacity-75 grayscale-[0.3]' : 'hover:shadow-2xl hover:-translate-y-1'}`}>
+              <div key={artifact.id} className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all ${isSold ? 'opacity-60' : 'hover:shadow-2xl hover:-translate-y-1'}`}>
                 <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100">
-                  <Image src={artifact.img} alt={artifact.name} fill className={`object-cover transition-transform duration-700 ${!isSold && 'group-hover:scale-110'}`} />
+                  <Image src={artifact.img} alt={artifact.name} fill className={`object-cover ${!isSold && 'group-hover:scale-110'} transition-transform duration-700`} />
                   {isSold && (
-                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[1px] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center">
                       <span className="text-white font-black text-2xl tracking-tighter border-2 border-white px-4 py-1 rotate-[-12deg]">SOLD</span>
                     </div>
                   )}
-                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase">
-                    {artifact.category}
-                  </div>
                 </div>
 
                 <div className="px-2 mb-6">
-                  <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
+                  <h3 className="text-xl font-extrabold text-slate-800">{artifact.name}</h3>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                    {isSold ? "Stored in Blockchain" : "Verified Artifact"}
+                    {isSold ? "Archived" : isCurrentQueue ? "Next in Queue" : "Locked"}
                   </p>
                 </div>
 
                 <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
                   <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-black">Cost</p>
                     <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} $AVT</p>
                   </div>
                   
                   {isSold ? (
-                    <button disabled className="bg-slate-200 text-slate-500 font-bold py-2 px-4 rounded-xl text-xs cursor-not-allowed">
-                      Sold Out
-                    </button>
+                    <button disabled className="bg-slate-200 text-slate-400 font-bold py-2 px-4 rounded-xl text-xs">Sold</button>
+                  ) : !isCurrentQueue ? (
+                    <button disabled className="bg-slate-100 text-slate-300 font-bold py-2 px-4 rounded-xl text-xs">Locked</button>
                   ) : (
                     <TransactionButton
                       transaction={() => {
