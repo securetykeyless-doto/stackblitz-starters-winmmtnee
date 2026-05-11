@@ -6,35 +6,34 @@ import { client } from "./client";
 import { chain } from "./chain";
 import { getContract } from "thirdweb";
 import { claimTo } from "thirdweb/extensions/erc721";
-import { balanceOf } from "thirdweb/extensions/erc20"; // Використовуємо стандартну функцію
+import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 
 export default function Home() {
   const account = useActiveAccount();
 
-  // Адреси контрактів
+  // Твої адреси контрактів
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
 
   const tokenContract = getContract({ client, chain, address: tokenAddress });
   const nftContract = getContract({ client, chain, address: nftDropAddress });
 
-  // Читання балансу - виправлений виклик
-  const { data: tokenBalance } = useReadContract(balanceOf, {
+  // Отримання балансу з перевіркою наявності аккаунта
+  const { data: tokenBalance } = useReadContract(getBalance, {
     contract: tokenContract,
-    address: account?.address || "0x0000000000000000000000000000000000000000", // Заглушка, щоб хук працював
+    address: account?.address || "0x0000000000000000000000000000000000000000",
   });
 
   const artifacts = [
-    { id: 0, name: "Jellyfish Artifact", category: "Zone", price: 1000, img: "/0.png" },
-    { id: 1, name: "Creaking Heart", category: "Minecraft", price: 2500, img: "/1.png" },
-    { id: 2, name: "Vice City Hype", category: "GTA VI", price: 5000, img: "/2.png" },
-    { id: 3, name: "Blue Energy Sculpture", category: "Music", price: 1500, img: "/3.png" },
-    { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: 10000, img: "/4.png" },
+    { id: 0, name: "Jellyfish Artifact", category: "Zone", price: 750000, img: "/0.png" },
+    { id: 1, name: "Creaking Heart", category: "Minecraft", price: 750000, img: "/1.png" },
+    { id: 2, name: "Vice City Hype", category: "GTA VI", price: 750000, img: "/2.png" },
+    { id: 3, name: "Blue Energy Sculpture", category: "Music", price: 750000, img: "/3.png" },
+    { id: 4, name: "Genesis $AVT Token", category: "Protocol", price: 750000, img: "/4.png" },
   ];
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200 overflow-x-hidden">
-      {/* Background */}
       <div className="fixed inset-0 z-0">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.15),rgba(255,255,255,0))]" />
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-[120px] opacity-50" />
@@ -52,8 +51,10 @@ export default function Home() {
           <div className="flex items-center gap-4">
             {account && (
               <div className="px-4 py-2 bg-blue-50 border border-blue-100 rounded-full font-mono text-sm text-blue-600 font-bold">
-                {/* Виправлене відображення балансу */}
-                {tokenBalance !== undefined ? (Number(tokenBalance) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 0 }) : "0"} $AVT
+                {/* Надійна перевірка балансу */}
+                {tokenBalance !== undefined 
+                  ? (Number(tokenBalance) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 0 }) 
+                  : "Loading..."} $AVT
               </div>
             )}
             <ConnectButton client={client} chain={chain} theme="light" />
@@ -66,7 +67,7 @@ export default function Home() {
             DIGITAL <span className="text-blue-600">VAULT</span>
           </h1>
           <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
-            Archive the pulse of 2025. Use your $AVT to claim exclusive, verifiable artifacts from gaming, music, and cinema.
+            Archive the pulse of 2026. Use your $AVT to claim exclusive artifacts.
           </p>
         </div>
 
@@ -75,12 +76,7 @@ export default function Home() {
           {artifacts.map((artifact) => (
             <div key={artifact.id} className="group bg-white border border-slate-200 rounded-[32px] p-4 transition-all hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-1">
               <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100 border border-slate-100">
-                <Image 
-                  src={artifact.img} 
-                  alt={artifact.name} 
-                  fill 
-                  className="object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
+                <Image src={artifact.img} alt={artifact.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase tracking-tighter">
                   {artifact.category}
                 </div>
@@ -88,13 +84,13 @@ export default function Home() {
 
               <div className="px-2 mb-6">
                 <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Base Network • Verified</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Base Network &bull; Verified</p>
               </div>
 
               <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
                 <div>
                   <p className="text-[10px] text-slate-400 uppercase font-black">Cost</p>
-                  <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} <span className="text-blue-600">$AVT</span></p>
+                  <p className="font-mono font-bold text-slate-900">750,000 <span className="text-blue-600">$AVT</span></p>
                 </div>
                 <TransactionButton
                   transaction={() => 
@@ -114,8 +110,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Footer */}
-        <footer className="mt-32 pt-10 border-t border-white/[0.03] text-center text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em]">
+        <footer className="mt-32 pt-10 border-t border-slate-200 text-center text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em]">
           Artifact Vault Labs &copy; 2026 | Powered by Base L2
         </footer>
       </div>
