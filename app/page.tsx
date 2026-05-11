@@ -20,11 +20,6 @@ export default function Home() {
   const nftContract = getContract({ client, chain, address: nftDropAddress });
 
   // READ DATA
-  const { data: tokenBalance, isLoading: isBalanceLoading } = useReadContract(getBalance, {
-    contract: tokenContract,
-    address: account?.address || "0x0000000000000000000000000000000000000000",
-  });
-
   const { data: currentAllowance } = useReadContract(allowance, {
     contract: tokenContract,
     owner: account?.address || "0x0000000000000000000000000000000000000000",
@@ -76,14 +71,22 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Header */}
+        {/* Header (Hero Section) */}
         <div className="text-center max-w-4xl mx-auto mb-20">
           <h1 className="text-7xl md:text-9xl font-black mb-8 tracking-tighter text-slate-900 uppercase italic">The Vault</h1>
           
           <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm mb-10">
-            <p className="text-xl text-slate-600 font-medium leading-relaxed mb-8">
+            <p className="text-xl text-slate-600 font-medium leading-relaxed mb-4">
               Decentralized archive on Base. Sequential NFT claims powered by <span className="font-bold text-slate-900">$AVT</span>.
             </p>
+
+            {/* Gaming Integration Text */}
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-8">
+              <p className="text-sm text-blue-700 font-bold uppercase tracking-wider">
+                <span className="mr-2">🎮</span> Future Utility: These artifacts will be integrated into modern gaming titles, 
+                unlocking exclusive rewards and in-game assets for all holders.
+              </p>
+            </div>
             
             <div className="grid md:grid-cols-3 gap-8 text-left border-t border-slate-100 pt-10">
               <div>
@@ -101,12 +104,14 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Contract Address */}
+          {/* Contract Address Bar */}
           <div className="inline-flex flex-col md:flex-row items-center gap-4 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-xl transition-transform hover:scale-[1.02]">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Contract (Base):</span>
             <code className="font-mono text-sm text-blue-300 break-all">{tokenAddress}</code>
-            <button onClick={copyToClipboard} className="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-all">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+            <button onClick={copyToClipboard} className="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-all shadow-inner">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/>
+              </svg>
             </button>
           </div>
         </div>
@@ -124,7 +129,7 @@ export default function Home() {
                 className={`group bg-white border border-slate-200 rounded-[32px] p-4 transition-all duration-500
                   ${isSold ? 'opacity-60 grayscale-[0.5]' : 
                     isNext ? 'ring-2 ring-blue-500 shadow-2xl scale-[1.02] z-10' : 
-                    'opacity-80 grayscale'}`} // <--- Набагато прозоріші заблоковані фото
+                    'opacity-80 grayscale-[0.2]'}`}
               >
                 <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100">
                   <Image 
@@ -147,7 +152,9 @@ export default function Home() {
                   </div>
                   {!isSold && !isNext && (
                     <div className="p-2 bg-slate-100 rounded-full opacity-50">
-                      <svg className="w-3 h-3 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+                      <svg className="w-3 h-3 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
                     </div>
                   )}
                 </div>
@@ -180,7 +187,7 @@ export default function Home() {
           })}
         </div>
 
-        {/* Social Footer */}
+        {/* Footer */}
         <footer className="mt-40 pb-12 text-center border-t border-slate-200 pt-20">
           <div className="flex justify-center gap-12 mb-10 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em]">
             <a href="#" className="hover:text-blue-600 transition-colors">Telegram</a>
