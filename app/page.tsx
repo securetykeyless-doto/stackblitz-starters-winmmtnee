@@ -73,7 +73,7 @@ export default function Home() {
 
         {/* Header (Hero Section) */}
         <div className="text-center max-w-4xl mx-auto mb-20">
-          <h1 className="text-7xl md:text-9xl font-black mb-8 tracking-tighter text-slate-900 uppercase italic">The Artifact Vault</h1>
+          <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter text-slate-900 uppercase italic">The Artifact Vault</h1>
           
           <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm mb-10">
             <p className="text-xl text-slate-600 font-medium leading-relaxed mb-4">
