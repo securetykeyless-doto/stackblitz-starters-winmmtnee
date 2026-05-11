@@ -11,7 +11,7 @@ import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 export default function Home() {
   const account = useActiveAccount();
 
-  // Твої адреси
+  // Your Contract Addresses
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
 
@@ -32,8 +32,8 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200">
-      {/* Світлий градієнтний фон */}
+    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200 overflow-x-hidden">
+      {/* Light Gradient Background */}
       <div className="fixed inset-0 z-0">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.15),rgba(255,255,255,0))]" />
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-[120px] opacity-50" />
@@ -43,7 +43,10 @@ export default function Home() {
         {/* Header */}
         <nav className="flex justify-between items-center mb-20 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
           <div className="flex items-center gap-3 pl-2">
-            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200">V</div>
+            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200">
+              {/* BRAND LOGO */}
+              <span className="font-mono tracking-tighter text-sm">AV</span>
+            </div>
             <span className="text-sm font-black tracking-widest uppercase text-slate-800">Artifact Vault</span>
           </div>
           <div className="flex items-center gap-4">
@@ -62,7 +65,7 @@ export default function Home() {
             DIGITAL <span className="text-blue-600">VAULT</span>
           </h1>
           <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
-            Archive the pulse of 2025. Use your $AVT to claim exclusive artifacts from gaming, music, and cinema.
+            Archive the pulse of 2025. Use your $AVT to claim exclusive, verifiable artifacts from gaming, music, and cinema.
           </p>
         </div>
 
@@ -84,7 +87,7 @@ export default function Home() {
 
               <div className="px-2 mb-6">
                 <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Base Network &bull; Artifact</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Base Network &bull; Verified</p>
               </div>
 
               <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
@@ -100,8 +103,8 @@ export default function Home() {
                       quantity: BigInt(1),
                     })
                   }
-                  onTransactionConfirmed={() => alert(`Artifact ${artifact.name} is yours!`)}
-                  className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all"
+                  onTransactionConfirmed={() => alert(`Success! ${artifact.name} is now in your Vault.`)}
+                  className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all active:!scale-95"
                 >
                   Claim
                 </TransactionButton>
@@ -109,6 +112,11 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        {/* Footer */}
+        <footer className="mt-32 pt-10 border-t border-white/[0.03] text-center text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em]">
+          Artifact Vault Labs &copy; 2026 | Powered by Base L2
+        </footer>
       </div>
     </main>
   );
