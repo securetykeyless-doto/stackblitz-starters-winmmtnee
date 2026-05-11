@@ -10,7 +10,7 @@ import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 export default function Home() {
   const account = useActiveAccount();
 
-  // Твої контракти
+  // Твої реальні адреси
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
 
@@ -23,67 +23,77 @@ export default function Home() {
   });
 
   return (
-    <main className="relative min-h-screen bg-[#020202] text-white overflow-hidden font-sans">
-      {/* Анімований фон */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+    <main className="min-h-screen bg-[#00040d] text-white font-sans selection:bg-blue-500/30">
+      {/* Той самий красивий фон з градієнтом */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-[#00040d] to-purple-900/20" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
       </div>
 
-      <header className="relative z-10 w-full p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-          <h1 className="text-xl font-bold tracking-[0.2em] uppercase">Artifact Vault</h1>
-        </div>
-        <ConnectButton client={client} chain={chain} theme="dark" />
-      </header>
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10">
+        {/* Header */}
+        <header className="flex justify-between items-center mb-20 p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.6)] flex items-center justify-center font-black text-xl">V</div>
+            <h1 className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-400">
+              ARTIFACT VAULT
+            </h1>
+          </div>
+          <ConnectButton client={client} chain={chain} theme="dark" />
+        </header>
 
-      <div className="relative z-10 flex flex-col items-center justify-center pt-20 px-4 text-center">
-        <div className="inline-block px-4 py-1 mb-6 border border-blue-500/30 rounded-full bg-blue-500/5 text-blue-400 text-xs font-mono tracking-widest uppercase">
-          Base Network Live
-        </div>
-        
-        <h2 className="text-5xl md:text-8xl font-black mb-6 tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
-          DIGITAL <br /> PRESERVATION
-        </h2>
+        {/* Hero Section з тим самим дизайном карти */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-left">
+            <h2 className="text-6xl md:text-7xl font-black leading-none mb-8 tracking-tighter">
+              SECURE YOUR <br />
+              <span className="text-blue-500">LEGACY</span>
+            </h2>
+            <p className="text-zinc-400 text-xl mb-10 max-w-lg leading-relaxed">
+              Unlock unique digital artifacts using your <span className="text-white font-bold">$AVT</span>. 
+              The vault is open for those who hold the key.
+            </p>
+            
+            {account && (
+              <div className="mb-8 p-6 bg-blue-600/10 border border-blue-500/20 rounded-2xl inline-block backdrop-blur-md">
+                <p className="text-xs uppercase tracking-[0.2em] text-blue-400 mb-2">Your Token Balance</p>
+                <div className="text-4xl font-mono font-bold">
+                  {tokenBalance ? (Number(tokenBalance) / 1e18).toLocaleString() : "0"} <span className="text-sm text-zinc-500">AVT</span>
+                </div>
+              </div>
+            )}
+          </div>
 
-        <p className="max-w-xl text-zinc-400 text-lg mb-10 leading-relaxed">
-          The first decentralized archive for 2025's cultural artifacts. 
-          Use your <span className="text-blue-400 font-bold">$AVT</span> to unlock historical assets.
-        </p>
+          {/* Картка клейму */}
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[40px] blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+            <div className="relative bg-[#0a0f1a] border border-white/10 p-10 rounded-[40px] shadow-2xl backdrop-blur-3xl text-center">
+              <div className="w-full aspect-square bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-3xl mb-8 flex items-center justify-center overflow-hidden border border-white/5">
+                <span className="text-6xl opacity-20">💎</span>
+                {/* Тут буде відображатися NFT після завантаження */}
+              </div>
 
-        {account && (
-          <div className="mb-10 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-2xl">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-[0.3em] mb-2 font-bold">Your Assets</p>
-            <div className="text-3xl font-mono font-black text-blue-400">
-              {tokenBalance ? (Number(tokenBalance) / 1e18).toLocaleString() : "0"} <span className="text-xs">AVT</span>
+              <TransactionButton
+                transaction={() => 
+                  claimTo({
+                    contract: nftContract,
+                    to: account?.address || "",
+                    quantity: 1n,
+                  })
+                }
+                onTransactionConfirmed={() => alert("Success! Artifact stored in your vault.")}
+                className="!w-full !bg-blue-600 hover:!bg-blue-500 !text-white !font-black !py-5 !rounded-2xl !text-xl !transition-all !shadow-[0_0_30px_rgba(37,99,235,0.3)]"
+              >
+                Claim Artifact
+              </TransactionButton>
+              <p className="mt-4 text-zinc-500 text-sm">Base Network • Verified Contract</p>
             </div>
           </div>
-        )}
-
-        <div className="group relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000"></div>
-          <TransactionButton
-            transaction={() => 
-              claimTo({
-                contract: nftContract,
-                to: account?.address || "",
-                quantity: 1n,
-              })
-            }
-            onTransactionConfirmed={() => alert("Artifact Acquired.")}
-            className="!relative !bg-white !text-black !font-black !py-5 !px-16 !rounded-full !text-xl !uppercase !tracking-widest !border-none !transition-transform active:!scale-95"
-          >
-            Claim Artifact
-          </TransactionButton>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl w-full text-left opacity-50">
-          <div className="p-6 border-l border-white/10 italic text-sm">Secure storage on Base blockchain</div>
-          <div className="p-6 border-l border-white/10 italic text-sm">Limited collection of 1000+ items</div>
-          <div className="p-6 border-l border-white/10 italic text-sm">Verified $AVT utility token</div>
-        </div>
+        <footer className="mt-32 pt-10 border-t border-white/5 text-center text-zinc-600">
+          <p className="text-sm tracking-widest font-medium uppercase">Artifact Vault Labs &copy; 2026</p>
+        </footer>
       </div>
     </main>
   );
