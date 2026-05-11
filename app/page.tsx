@@ -10,14 +10,12 @@ import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
 export default function Home() {
   const account = useActiveAccount();
 
-  // Адреси твоїх контрактів
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
 
   const tokenContract = getContract({ client, chain, address: tokenAddress });
   const nftContract = getContract({ client, chain, address: nftDropAddress });
 
-  // Отримання балансу $AVT
   const { data: tokenBalance, isLoading: isBalanceLoading } = useReadContract(getBalance, {
     contract: tokenContract,
     address: account?.address || "0x0000000000000000000000000000000000000000",
@@ -33,14 +31,12 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200 overflow-x-hidden">
-      {/* Background Decor */}
       <div className="fixed inset-0 z-0">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.15),rgba(255,255,255,0))]" />
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-[120px] opacity-50" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        {/* Header Navigation */}
         <nav className="flex justify-between items-center mb-20 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
           <div className="flex items-center gap-3 pl-2">
             <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200">
@@ -59,7 +55,6 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-24">
           <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight text-slate-900">
             DIGITAL <span className="text-blue-600">VAULT</span>
@@ -69,17 +64,11 @@ export default function Home() {
           </p>
         </div>
 
-        {/* NFT Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => (
             <div key={artifact.id} className="group bg-white border border-slate-200 rounded-[32px] p-4 transition-all hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-1">
               <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100 border border-slate-100">
-                <Image 
-                  src={artifact.img} 
-                  alt={artifact.name} 
-                  fill 
-                  className="object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
+                <Image src={artifact.img} alt={artifact.name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase tracking-tighter">
                   {artifact.category}
                 </div>
@@ -100,21 +89,26 @@ export default function Home() {
                   transaction={() => 
                     prepareContractCall({
                       contract: nftContract,
-                      method: "function claim(address receiver, uint256 quantity, address currency, uint256 pricePerToken, (bytes32[] proof, uint256 quantityLimitPerWallet, uint256 pricePerToken, address currency) allowlistProof, bytes data) payable",
+                      method: "function claim(address receiver, uint256 quantity, address currency, uint256 pricePerToken, (uint256 pricePerToken, address currency, uint256 quantityLimitPerWallet, bytes32[] proof) allowlistProof, bytes data) payable",
                       params: [
                         account?.address || "", 
                         BigInt(1), 
                         tokenAddress, 
-                        BigInt(750000) * BigInt(10**18), // Ціна x 10^18 decimals
-                        [[], BigInt(0), BigInt(0), "0x0000000000000000000000000000000000000000"], 
+                        BigInt(750000) * BigInt(10**18),
+                        {
+                          pricePerToken: BigInt(0),
+                          currency: "0x0000000000000000000000000000000000000000",
+                          quantityLimitPerWallet: BigInt(0),
+                          proof: [],
+                        }, 
                         "0x"
                       ],
                     })
                   }
                   onTransactionConfirmed={() => alert(`Success! ${artifact.name} is now in your Vault.`)}
                   onError={(err) => {
-                    console.error("Full Error Detail:", err);
-                    alert("Transaction failed. Check console (F12) for details.");
+                    console.error("Full Error:", err);
+                    alert("Transaction failed. Check console for details.");
                   }}
                   className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all active:!scale-95"
                 >
@@ -125,7 +119,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Footer */}
         <footer className="mt-32 pt-10 border-t border-slate-200 text-center text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em]">
           Artifact Vault Labs &copy; 2026 | Powered by Base L2
         </footer>
