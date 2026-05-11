@@ -2,8 +2,8 @@
 const nextConfig = {
     webpack: (config) => {
       config.externals.push({
-        "pino-pretty": "pino-pretty",
-        encoding: "encoding",
+        'pino-pretty': 'pino-pretty',
+        'encoding': 'encoding',
       });
       return config;
     },

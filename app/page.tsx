@@ -7,12 +7,11 @@ import { chain } from "./chain";
 import { getContract } from "thirdweb";
 import { claimTo } from "thirdweb/extensions/erc721";
 import { balanceOf as getBalance } from "thirdweb/extensions/erc20";
-import { useState } from "react";
 
 export default function Home() {
   const account = useActiveAccount();
 
-  // Твої реальні адреси
+  // Твої адреси
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
 
@@ -24,7 +23,6 @@ export default function Home() {
     address: account?.address || "",
   });
 
-  // Локальний масив для відображення артефактів (поки вони не завантажені на контракт)
   const artifacts = [
     { id: 0, name: "Jellyfish Artifact", category: "Zone", price: 1000, img: "/0.png" },
     { id: 1, name: "Creaking Heart", category: "Minecraft", price: 2500, img: "/1.png" },
@@ -34,90 +32,83 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#02040a] text-zinc-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
-      {/* Dynamic Background */}
+    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200">
+      {/* Світлий градієнтний фон */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/5 rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.15),rgba(255,255,255,0))]" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-[120px] opacity-50" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
-        <nav className="flex justify-between items-center mb-16 p-4 bg-white/[0.01] border border-white/5 backdrop-blur-3xl rounded-2xl shadow-2xl">
+        <nav className="flex justify-between items-center mb-20 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
           <div className="flex items-center gap-3 pl-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black shadow-[0_0_20px_rgba(37,99,235,0.4)] text-white">V</div>
-            <span className="text-sm font-bold tracking-[0.3em] uppercase opacity-80">Artifact Vault</span>
+            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-200">V</div>
+            <span className="text-sm font-black tracking-widest uppercase text-slate-800">Artifact Vault</span>
           </div>
           <div className="flex items-center gap-4">
             {account && (
-              <div className="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full font-mono text-sm text-blue-400">
+              <div className="px-4 py-2 bg-blue-50 border border-blue-100 rounded-full font-mono text-sm text-blue-600 font-bold">
                 {tokenBalance ? (Number(tokenBalance) / 1e18).toLocaleString() : "0"} $AVT
               </div>
             )}
-            <ConnectButton client={client} chain={chain} theme="dark" />
+            <ConnectButton client={client} chain={chain} theme="light" />
           </div>
         </nav>
 
         {/* Hero Section */}
-        <div className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto pt-10 mb-24">
-          <h2 className="text-7xl md:text-9xl font-black mb-8 tracking-tighter leading-[0.8] text-white">
-            UNVAULT <br /><span className="text-blue-500">HISTORY</span>
-          </h2>
-          <p className="text-zinc-500 text-lg md:text-xl mb-12 max-w-xl leading-relaxed">
-            The premium decentralized archive for 2025's cultural artifacts. 
-            Exchange your <span className="text-white font-semibold">$AVT</span> to claim immutable assets.
+        <div className="text-center max-w-3xl mx-auto mb-24">
+          <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight text-slate-900">
+            DIGITAL <span className="text-blue-600">VAULT</span>
+          </h1>
+          <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
+            Archive the pulse of 2025. Use your $AVT to claim exclusive artifacts from gaming, music, and cinema.
           </p>
         </div>
 
-        {/* Artifacts Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {artifacts.map((artifact) => (
-            <div key={artifact.id} className="relative group p-1 bg-gradient-to-b from-white/5 to-transparent rounded-3xl transition-all hover:scale-[1.02] hover:from-blue-500/20 shadow-xl">
-              <div className="bg-[#05070f] p-6 rounded-[22px] border border-white/5 h-full flex flex-col">
-                <div className="relative aspect-[4/5] mb-6 rounded-xl bg-zinc-900/50 border border-white/5 flex items-center justify-center group overflow-hidden">
-                  <Image 
-                    src={artifact.img} 
-                    alt={artifact.name} 
-                    fill 
-                    className="object-cover group-hover:scale-110 transition-transform duration-500" 
-                  />
-                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
-                    {artifact.category}
-                  </div>
+            <div key={artifact.id} className="group bg-white border border-slate-200 rounded-[32px] p-4 transition-all hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-1">
+              <div className="relative aspect-square mb-6 rounded-[24px] overflow-hidden bg-slate-100 border border-slate-100">
+                <Image 
+                  src={artifact.img} 
+                  alt={artifact.name} 
+                  fill 
+                  className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                />
+                <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold text-blue-600 uppercase tracking-tighter">
+                  {artifact.category}
                 </div>
+              </div>
 
-                <div className="flex-grow mb-6">
-                  <h3 className="text-lg font-bold text-white mb-1 tracking-tight">{artifact.name}</h3>
-                  <p className="text-xs text-zinc-600 uppercase tracking-wider font-semibold">Base ERC-721 Drop</p>
-                </div>
+              <div className="px-2 mb-6">
+                <h3 className="text-xl font-extrabold text-slate-800 mb-1">{artifact.name}</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Base Network &bull; Artifact</p>
+              </div>
 
-                <div className="flex items-center justify-between gap-4">
-                  <p className="font-mono text-sm text-zinc-400">
-                    {artifact.price.toLocaleString()} <span className="text-blue-500">$AVT</span>
-                  </p>
-                  <TransactionButton
-                    transaction={() => 
-                      claimTo({
-                        contract: nftContract,
-                        to: account?.address || "",
-                        quantity: BigInt(1),
-                      })
-                    }
-                    onTransactionConfirmed={() => alert(`Success! ${artifact.name} Claimed.`)}
-                    className="!bg-white hover:!bg-zinc-200 !text-black !font-black !py-2.5 !px-5 !rounded-lg !text-xs !uppercase !tracking-widest !transition-all active:!scale-95 !shadow-[0_10px_20px_rgba(255,255,255,0.05)]"
-                  >
-                    Claim
-                  </TransactionButton>
+              <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase font-black">Cost</p>
+                  <p className="font-mono font-bold text-slate-900">{artifact.price.toLocaleString()} <span className="text-blue-600">$AVT</span></p>
                 </div>
+                <TransactionButton
+                  transaction={() => 
+                    claimTo({
+                      contract: nftContract,
+                      to: account?.address || "",
+                      quantity: BigInt(1),
+                    })
+                  }
+                  onTransactionConfirmed={() => alert(`Artifact ${artifact.name} is yours!`)}
+                  className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-bold !py-2 !px-4 !rounded-xl !text-xs !transition-all"
+                >
+                  Claim
+                </TransactionButton>
               </div>
             </div>
           ))}
         </div>
-
-        {/* Footer */}
-        <footer className="mt-32 pt-10 border-t border-white/[0.03] text-center text-[10px] text-zinc-700 font-bold uppercase tracking-[0.4em]">
-          Artifact Vault Labs &copy; 2026 | Secured by Base L2
-        </footer>
       </div>
     </main>
   );
