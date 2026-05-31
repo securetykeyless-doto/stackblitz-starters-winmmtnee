@@ -5,7 +5,7 @@ import { client } from "./client";
 import { chain } from "./chain";
 import { getContract } from "thirdweb";
 import { approve, allowance } from "thirdweb/extensions/erc20";
-import { claimTo, getTotalClaimedSupply } from "thirdweb/extensions/erc721";
+import { claimTo, getTotalClaimedSupply, getNFT } from "thirdweb/extensions/erc721";
 
 export default function Home() {
   const account = useActiveAccount();
@@ -14,11 +14,14 @@ export default function Home() {
 
   useEffect(() => { setIsMounted(true); }, []);
 
+  // CONTRACT ADDRESSES
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
+  
   const tokenContract = getContract({ client, chain, address: tokenAddress });
   const nftContract = getContract({ client, chain, address: nftDropAddress });
 
+  // READ CONTRACT DATA
   const { data: currentAllowance } = useReadContract(allowance, {
     contract: tokenContract,
     owner: account?.address || "0x0000000000000000000000000000000000000000",
@@ -26,14 +29,36 @@ export default function Home() {
   });
 
   const { data: totalClaimed } = useReadContract(getTotalClaimedSupply, { contract: nftContract });
+  
   const priceInWei = BigInt(750000) * BigInt(10 ** 18);
+  const claimedCount = totalClaimed ? Number(totalClaimed) : 0;
 
-  const artifacts = [
-    { id: 0, name: "Jellyfish", category: "Zone Collection", img: "https://images.unsplash.com/photo-1564419320461-6870880221ad?w=400" },
-    { id: 1, name: "Creaking Heart", category: "Minecraft Relics", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400" },
-    { id: 2, name: "Vice City Hype", category: "Games Archive", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400" },
-    { id: 3, name: "Blue Energy", category: "Music Vault", img: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400" },
-  ];
+  // ДИНАМІЧНЕ ЧИТАННЯ МЕТАДАНИХ NFT З КОНТРАКТУ
+  // Функція автоматично бере метадані для токенів з ID 0, 1, 2, 3
+  const useFetchNFTs = () => {
+    const nft0 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(0) });
+    const nft1 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(1) });
+    const nft2 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(2) });
+    const nft3 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(3) });
+
+    return [
+      { id: 0, name: nft0.data?.metadata?.name || "Artifact #0", category: "Archived Asset", img: nft0.data?.metadata?.image || "" },
+      { id: 1, name: nft1.data?.metadata?.name || "Artifact #1", category: "Archived Asset", img: nft1.data?.metadata?.image || "" },
+      { id: 2, name: nft2.data?.metadata?.name || "Artifact #2", category: "Archived Asset", img: nft2.data?.metadata?.image || "" },
+      { id: 3, name: nft3.data?.metadata?.name || "Artifact #3", category: "Active Mint", img: nft3.data?.metadata?.image || "" },
+    ];
+  };
+
+  const artifacts = useFetchNFTs();
+
+  // Функція для конвертації IPFS посилань (ipfs://...) у звичайні HTTP-посилання для відображення в браузері
+  const getImageUrl = (ipfsUrl: string) => {
+    if (!ipfsUrl) return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400"; // Заглушка, поки вантажиться
+    if (ipfsUrl.startsWith("ipfs://")) {
+      return ipfsUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
+    }
+    return ipfsUrl;
+  };
 
   if (!isMounted) {
     return <div className="min-h-screen bg-slate-50 flex items-center justify-center font-mono text-xs text-slate-400">LOADING SYSTEM...</div>;
@@ -41,7 +66,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans overflow-x-hidden relative z-10 max-w-7xl mx-auto px-6 py-12">
-      {/* Навігація */}
+      {/* Navigation */}
       <nav className="flex justify-between items-center mb-16 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
         <div className="flex items-center gap-2 font-black tracking-widest text-sm uppercase text-slate-800">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">AV</div>
@@ -50,18 +75,18 @@ export default function Home() {
         <div className="hidden md:flex gap-6">
           {["vault", "roadmap", "archive", "stats"].map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`font-bold text-[10px] uppercase tracking-widest ${activeTab === tab ? "text-blue-600" : "text-slate-400"}`}>
-              {tab === "vault" ? "Головна (Mint)" : tab === "roadmap" ? "План дій" : tab === "archive" ? "Архів" : "Токеноміка"}
+              {tab === "vault" ? "Home (Mint)" : tab === "roadmap" ? "Roadmap" : tab === "archive" ? "Archive" : "Tokenomics"}
             </button>
           ))}
         </div>
         <ConnectButton client={client} chain={chain} theme="light" />
       </nav>
 
-      {/* Hero блок */}
+      {/* Hero Section */}
       <div className="text-center max-w-4xl mx-auto mb-20">
         <h1 className="text-5xl md:text-6xl font-black mb-6 uppercase italic tracking-tighter">The Artifact Vault</h1>
         <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm mb-6">
-          <p className="text-lg text-slate-600 mb-4">Decentralized archive on Base. Claims powered by <span className="font-bold text-slate-900">$AVT</span>.</p>
+          <p className="text-lg text-slate-600 mb-4">Decentralized archive on Base network. Sequential claims powered by <span className="font-bold text-slate-900">$AVT</span>.</p>
           <p className="text-xs text-blue-700 bg-blue-50 py-2 px-4 rounded-xl font-bold uppercase tracking-wide inline-block">🎮 Gaming Utility Integration in Progress</p>
         </div>
         <div className="inline-block bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-mono">
@@ -69,7 +94,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Вкладка 1: Вітрина мінту */}
+      {/* Tab 1: Mint Showroom */}
       {activeTab === "vault" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {artifacts.map((art) => {
@@ -77,12 +102,12 @@ export default function Home() {
             const isNext = art.id === 3;
             const needsApprove = !currentAllowance || currentAllowance < priceInWei;
             return (
-              <div key={art.id} className={`bg-white border border-slate-200 rounded-[24px] p-4 shadow-sm ${isSold ? 'opacity-60' : isNext ? 'ring-2 ring-blue-500' : 'opacity-40'}`}>
+              <div key={art.id} className={`bg-white border border-slate-200 rounded-[24px] p-4 shadow-sm ${isSold ? 'opacity-60' : isNext ? 'ring-2 ring-blue-500 shadow-xl' : 'opacity-40'}`}>
                 <div className="relative aspect-square mb-4 rounded-xl overflow-hidden bg-slate-100">
-                  <img src={art.img} alt={art.name} className="w-full h-full object-cover" />
+                  <img src={getImageUrl(art.img)} alt={art.name} className="w-full h-full object-cover" />
                   {isSold && <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center"><span className="text-white font-black text-sm border-2 border-white px-3 py-0.5 rotate-[-10deg]">ARCHIVED</span></div>}
                 </div>
-                <h3 className="text-md font-black uppercase text-slate-800 leading-none">{art.name}</h3>
+                <h3 className="text-md font-black uppercase text-slate-800 leading-none truncate">{art.name}</h3>
                 <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 mb-4">{art.category}</p>
                 <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
                   <span className="font-mono text-xs font-bold">750k $AVT</span>
@@ -90,7 +115,7 @@ export default function Home() {
                     <TransactionButton
                       transaction={() => needsApprove ? approve({ contract: tokenContract, spender: nftDropAddress, amount: "750000" }) : claimTo({ contract: nftContract, to: account?.address || "", quantity: BigInt(1) })}
                       onTransactionConfirmed={() => window.location.reload()}
-                      className="!font-bold !py-1.5 !px-3 !rounded-lg !text-[9px] !bg-blue-600 !text-white uppercase"
+                      className="!font-bold !py-1.5 !px-3 !rounded-lg !text-[9px] !bg-blue-600 !text-white uppercase tracking-wider"
                     >
                       {needsApprove ? "Approve" : "Mint"}
                     </TransactionButton>
@@ -102,7 +127,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Вкладка 2: План дій */}
+      {/* Tab 2: Roadmap */}
       {activeTab === "roadmap" && (
         <div className="bg-white border border-slate-200 rounded-[24px] p-8 max-w-2xl mx-auto space-y-6">
           <h2 className="text-2xl font-black uppercase italic border-b pb-2">6-Month Roadmap</h2>
@@ -117,7 +142,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Вкладка 3: Повний архів */}
+      {/* Tab 3: Complete Archive */}
       {activeTab === "archive" && (
         <div className="bg-white border border-slate-200 rounded-[24px] p-8 text-center max-w-2xl mx-auto">
           <h2 className="text-2xl font-black uppercase italic mb-2">The Historical Vault</h2>
@@ -125,7 +150,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Вкладка 4: Токеноміка */}
+      {/* Tab 4: Tokenomics */}
       {activeTab === "stats" && (
         <div className="bg-white border border-slate-200 rounded-[24px] p-8 max-w-2xl mx-auto text-center">
           <h2 className="text-2xl font-black uppercase italic mb-4">Tokenomics</h2>
