@@ -78,49 +78,59 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans overflow-x-hidden relative z-10 max-w-7xl mx-auto px-6 py-12">
-      {/* Navigation */}
-      <nav className="flex justify-between items-center mb-16 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
-        <div className="flex items-center gap-2 font-black tracking-widest text-sm uppercase text-slate-800">
+    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans overflow-x-hidden relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      
+      {/* Navigation — Блок повністю переписано під Mobile Responsive */}
+      <nav className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-12 sm:mb-16 p-4 bg-white/70 border border-slate-200 backdrop-blur-xl rounded-2xl shadow-sm">
+        <div className="flex items-center gap-2 font-black tracking-widest text-sm uppercase text-slate-800 w-full sm:w-auto justify-start">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">AV</div>
           <span className="pl-2">Artifact Vault</span>
         </div>
-        <div className="hidden md:flex gap-6">
+        
+        {/* Горизонтальна скрол-стрічка для мобільних, звичайне меню для десктопу */}
+        <div className="flex w-full sm:w-auto overflow-x-auto no-scrollbar gap-6 pb-2 sm:pb-0 border-b sm:border-none border-slate-100 justify-start sm:justify-center px-1">
           {["vault", "roadmap", "archive", "stats"].map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`font-bold text-[10px] uppercase tracking-widest ${activeTab === tab ? "text-blue-600" : "text-slate-400"}`}>
-              {tab === "vault" ? "Home (Mint)" : tab === "roadmap" ? "Roadmap" : tab === "archive" ? "Rarity & Categories" : "Tokenomics"}
+            <button 
+              key={tab} 
+              onClick={() => setActiveTab(tab)} 
+              className={`font-black text-[10px] uppercase tracking-widest whitespace-nowrap bg-transparent border-none cursor-pointer py-1 block transition-colors ${activeTab === tab ? "text-blue-600" : "text-slate-400"}`}
+            >
+              {tab === "vault" ? "Home (Mint)" : tab === "roadmap" ? "Roadmap" : tab === "archive" ? "Rarity" : "Tokenomics"}
             </button>
           ))}
         </div>
-        <ConnectButton client={client} chain={chain} theme="light" />
+        
+        <div className="w-full sm:w-auto flex justify-end sm:justify-center">
+          <ConnectButton client={client} chain={chain} theme="light" />
+        </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="text-center max-w-4xl mx-auto mb-20">
-        <h1 className="text-5xl md:text-6xl font-black mb-6 uppercase italic tracking-tighter">The Artifact Vault</h1>
-        <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm mb-6">
-          <p className="text-lg text-slate-600 mb-4">Decentralized archive on Base network. Sequential claims powered by <span className="font-bold text-slate-900">$AVT</span>.</p>
+      <div className="text-center max-w-4xl mx-auto mb-16 sm:mb-20 px-2">
+        <h1 className="text-4xl md:text-6xl font-black mb-6 uppercase italic tracking-tighter leading-none">The Artifact Vault</h1>
+        <div className="bg-white border border-slate-200 rounded-[24px] p-4 sm:p-6 shadow-sm mb-6">
+          <p className="text-base sm:text-lg text-slate-600 mb-4">Decentralized archive on Base network. Sequential claims powered by <span className="font-bold text-slate-900">$AVT</span>.</p>
           <p className="text-xs text-blue-700 bg-blue-50 py-2 px-4 rounded-xl font-bold uppercase tracking-wide inline-block">🎮 Gaming Utility Integration in Progress</p>
         </div>
-        <div className="inline-block bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-mono">
+        <div className="inline-block bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-mono max-w-full truncate">
           Contract: <span className="text-blue-300 break-all">{tokenAddress}</span>
         </div>
       </div>
 
       {/* Tab 1: Home / Mint Showcase */}
       {activeTab === "vault" && (
-        <div className="space-y-16">
+        <div className="space-y-12 sm:space-y-16">
           {/* Live Activity Tracker */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm max-w-xl mx-auto text-center">
             <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">Live Vault Status</span>
-            <div className="text-3xl font-mono font-bold text-slate-900 mb-3">{claimedCount} Artifacts Extracted</div>
+            <div className="text-2xl sm:text-3xl font-mono font-bold text-slate-900 mb-3">{claimedCount} Artifacts Extracted</div>
             <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
               <div className="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style={{ width: `${Math.min((claimedCount / 100) * 100, 100)}%` }}></div>
             </div>
             <p className="text-[10px] text-slate-400 mt-2 font-medium">The system tracks claims automatically directly from the Base blockchain.</p>
           </div>
 
-          {/* Mint Grid */}
+          {/* Mint Grid — Оптимізовано для мобільної сітки */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {artifacts.map((art) => {
               const isSold = art.id < claimedCount;
@@ -137,8 +147,6 @@ export default function Home() {
                   
                   {/* DYNAMIC PRICE LOGIC WITH MAIN VARIABLE */}
                   {(() => {
-                    // Якщо картка вже продана в минулому: перші 5 були по 750k, наступні по 200k.
-                    // Якщо картка активна для мінту зараз або заблокована попереду — ставимо нову глобальну ціну.
                     const currentPriceTokens = isSold 
                       ? (art.id < 5 ? 750000 : 200000) 
                       : ACTIVE_MINT_PRICE;
@@ -177,9 +185,9 @@ export default function Home() {
           </div>
 
           {/* Quick FAQ Guide */}
-          <div className="bg-white border border-slate-200 rounded-[32px] p-8 max-w-4xl mx-auto shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-[32px] p-6 sm:p-8 max-w-4xl mx-auto shadow-sm">
             <h3 className="text-xl font-black uppercase italic mb-6 text-slate-900 text-center">Quick System Guide</h3>
-            <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="p-4 bg-slate-50 rounded-2xl">
                 <h4 className="font-bold text-slate-800 mb-2">1. What is $AVT?</h4>
                 <p className="text-slate-600 text-xs leading-relaxed">It is the native utility token used exclusively to unlock and claim digital relics inside the sequential Artifact Vault archive.</p>
@@ -199,51 +207,51 @@ export default function Home() {
 
       {/* Tab 2: Roadmap */}
       {activeTab === "roadmap" && (
-        <div className="bg-white border border-slate-200 rounded-[24px] p-8 max-w-2xl mx-auto space-y-6 shadow-sm">
-          <div className="flex justify-between items-center border-b pb-4">
+        <div className="bg-white border border-slate-200 rounded-[24px] p-6 sm:p-8 max-w-2xl mx-auto space-y-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b pb-4">
             <h2 className="text-2xl font-black uppercase italic text-slate-900">6-Month Roadmap</h2>
-            <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full uppercase">Target: $500k MCAP</span>
+            <span className="text-[9px] bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full uppercase self-start sm:self-center">Target: $500k MCAP</span>
           </div>
           
           <div className="border-l-2 border-blue-500 pl-4 space-y-6 text-sm">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-bold text-blue-600">Month 1: Token Genesis &amp; Initial Setup</h4>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h4 className="font-bold text-blue-600">Month 1: Token Genesis &amp; Setup</h4>
                 <span className="text-[8px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded uppercase">Done</span>
               </div>
               <p className="text-slate-600 text-xs">Successful token deployment on Base. Branding integration, logo upload, and deploying the core NFT smart contract with initial test mints successfully completed.</p>
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-bold text-slate-800">Month 2: Liquidity Activation &amp; Main Launch</h4>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h4 className="font-bold text-slate-800">Month 2: Liquidity Activation</h4>
                 <span className="text-[8px] font-bold bg-orange-100 text-orange-700 px-2 py-0.5 rounded uppercase">In Progress</span>
               </div>
               <p className="text-slate-600 text-xs">Adding official liquidity pool on Uniswap. Opening public mint gateway access for global marketing campaigns and early community builders support.</p>
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
                 <h4 className="font-bold text-slate-800">Month 3: Platform Verification</h4>
                 <span className="text-[8px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded uppercase">Upcoming</span>
               </div>
               <p className="text-slate-600 text-xs">Full indexing and data update on DexScreener, DEXTools, and GeckoTerminal. Expanding token metadata sets and locking team LP permanently.</p>
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-bold text-slate-800">Month 4: Algorithmic Volume &amp; Engagement</h4>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h4 className="font-bold text-slate-800">Month 4: Algorithmic Volume</h4>
                 <span className="text-[8px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded uppercase">Upcoming</span>
               </div>
               <p className="text-slate-600 text-xs">Activation of custom back-end automated trading scripts to maintain consistent organic metrics, supporting chart performance and market trends.</p>
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-bold text-slate-800">Month 5: Special Tier Vault Extensions</h4>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h4 className="font-bold text-slate-800">Month 5: Special Tier Extensions</h4>
                 <span className="text-[8px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded uppercase">Upcoming</span>
               </div>
               <p className="text-slate-600 text-xs">Introduction of exclusive high-tier artifact series accessible only to historical serial holders, intensifying secondary market value.</p>
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="font-bold text-slate-800">Month 6: Deflation Shock &amp; Cross-Chain</h4>
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h4 className="font-bold text-slate-800">Month 6: Deflation Shock</h4>
                 <span className="text-[8px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded uppercase">Upcoming</span>
               </div>
               <p className="text-slate-600 text-xs">Massive automated token burn event to create a supply shock. Negotiating gaming utility integrations with verified Base network Web3 partners.</p>
@@ -254,11 +262,11 @@ export default function Home() {
 
       {/* Tab 3: Rarity & Categories */}
       {activeTab === "archive" && (
-        <div className="bg-white border border-slate-200 rounded-[24px] p-8 max-w-3xl mx-auto shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[24px] p-6 sm:p-8 max-w-3xl mx-auto shadow-sm">
           <h2 className="text-2xl font-black uppercase italic mb-2 text-slate-900 text-center">Artifact Rarity &amp; Categories</h2>
           <p className="text-slate-500 text-sm text-center mb-8">The archive processes multiple genres of digital assets. Learn about item classes and classifications.</p>
           
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="border border-slate-100 p-5 rounded-2xl bg-slate-50/50">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-blue-500" />
@@ -300,24 +308,24 @@ export default function Home() {
 
       {/* Tab 4: Tokenomics */}
       {activeTab === "stats" && (
-        <div className="bg-white border border-slate-200 rounded-[24px] p-8 max-w-2xl mx-auto shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[24px] p-6 sm:p-8 max-w-2xl mx-auto shadow-sm">
           <h2 className="text-2xl font-black uppercase italic mb-2 text-slate-900 text-center">Ecosystem Tokenomics</h2>
           <p className="text-slate-500 text-sm text-center mb-8">System metrics, hyper-deflationary allocation setups, and AMM metrics for $AVT.</p>
           
-          <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6">
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
               <span className="text-slate-400 text-xs block font-medium">Total Token Supply</span>
-              <strong className="text-lg font-mono text-slate-900">1,000,000,000 $AVT</strong>
+              <strong className="text-md sm:text-lg font-mono text-slate-900">1,000,000,000 $AVT</strong>
             </div>
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
               <span className="text-slate-400 text-xs block font-medium">Initial Liquidity Pair</span>
-              <strong className="text-lg font-mono text-slate-900">$2,500 ETH Pool</strong>
+              <strong className="text-md sm:text-lg font-mono text-slate-900">$2,500 ETH Pool</strong>
             </div>
           </div>
 
           {/* Deflation Allocation Split Cards */}
           <div className="space-y-3 mb-6">
-            <div className="flex justify-between items-center bg-orange-50 border border-orange-100 p-4 rounded-xl">
+            <div className="flex justify-between items-center bg-orange-50 border border-orange-100 p-4 rounded-xlgap-4">
               <div>
                 <h4 className="text-xs font-black uppercase text-orange-800">🔥 50% Token Burn Allocation</h4>
                 <p className="text-[11px] text-orange-600 mt-0.5">Half of all $AVT received from every single NFT mint is permanently destroyed out of circulation.</p>
@@ -325,7 +333,7 @@ export default function Home() {
               <span className="font-mono font-bold text-sm text-orange-700 bg-white px-2.5 py-1 rounded-lg border border-orange-200">50%</span>
             </div>
 
-            <div className="flex justify-between items-center bg-blue-50 border border-blue-100 p-4 rounded-xl">
+            <div className="flex justify-between items-center bg-blue-50 border border-blue-100 p-4 rounded-xl gap-4">
               <div>
                 <h4 className="text-xs font-black uppercase text-blue-800">🛡️ 50% Ecosystem &amp; Support Fund</h4>
                 <p className="text-[11px] text-blue-600 mt-0.5">Remaining half goes to buybacks, automated trading support, and continuous server indexing infrastructure.</p>
@@ -334,14 +342,14 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-slate-900 text-blue-300 p-4 rounded-xl font-mono text-[11px] text-left leading-relaxed">
+          <div className="bg-slate-900 text-blue-300 p-4 rounded-xl font-mono text-[11px] text-left leading-relaxed overflow-x-auto">
             <div>{"// Constant Product Market Maker Formula"}</div>
             <div>{"// X * Y = K"}</div>
             <div className="text-slate-400 mt-2">{"// The contraction of X (Supply) due to the 50% burn directly increases asset valuation inside the automated pool."}</div>
           </div>
 
           {/* Quick Links */}
-          <div className="grid grid-cols-2 gap-4 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
             <a href="https://uniswap.org" target="_blank" rel="noopener noreferrer" className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all text-center">Buy $AVT on Uniswap</a>
             <a href="https://dexscreener.com" target="_blank" rel="noopener noreferrer" className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all text-center">Chart on DexScreener</a>
           </div>
