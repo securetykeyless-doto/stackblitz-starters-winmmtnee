@@ -29,8 +29,6 @@ export default function Home() {
   });
 
   const { data: totalClaimed } = useReadContract(getTotalClaimedSupply, { contract: nftContract });
-  
-  const priceInWei = BigInt(750000) * BigInt(10 ** 18);
   const claimedCount = totalClaimed ? Number(totalClaimed) : 0;
 
   // DYNAMIC NFT QUEUE
@@ -117,7 +115,6 @@ export default function Home() {
             {artifacts.map((art) => {
               const isSold = art.id < claimedCount;
               const isNext = art.id === claimedCount;
-              const needsApprove = !currentAllowance || currentAllowance < priceInWei;
 
               return (
                 <div key={art.id} className={`bg-white border border-slate-200 rounded-[24px] p-4 shadow-sm transition-all duration-300 ${isSold ? 'opacity-60 grayscale-[0.2]' : isNext ? 'ring-2 ring-blue-500 shadow-xl scale-[1.01]' : 'opacity-40'}`}>
@@ -127,18 +124,38 @@ export default function Home() {
                   </div>
                   <h3 className="text-md font-black uppercase text-slate-800 leading-none truncate">{art.name}</h3>
                   <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 mb-4">ID #{art.id} — {art.category}</p>
-                  <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
-                    <span className="font-mono text-xs font-bold">750k $AVT</span>
-                    {isSold ? <span className="text-[10px] font-black text-slate-400 uppercase">Sold Out</span> : isNext ? (
-                      <TransactionButton
-                        transaction={() => needsApprove ? approve({ contract: tokenContract, spender: nftDropAddress, amount: "750000" }) : claimTo({ contract: nftContract, to: account?.address || "", quantity: BigInt(1) })}
-                        onTransactionConfirmed={() => window.location.reload()}
-                        className="!font-bold !py-1.5 !px-3 !rounded-lg !text-[9px] !bg-blue-600 !text-white uppercase tracking-wider"
-                      >
-                        {needsApprove ? "Approve" : "Mint"}
-                      </TransactionButton>
-                    ) : <span className="text-[10px] font-black text-slate-300 uppercase">Locked</span>}
-                  </div>
+                  
+                  {/* DYNAMIC PRICE LOGIC PER CARD */}
+                  {(() => {
+                    const currentPriceTokens = art.id < 5 ? 750000 : 200000;
+                    const currentPriceWei = BigInt(currentPriceTokens) * BigInt(10 ** 18);
+                    const needsApprove = !currentAllowance || currentAllowance < currentPriceWei;
+
+                    return (
+                      <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                        <span className="font-mono text-xs font-bold">
+                          {art.id < 5 ? "750k" : "200k"} $AVT
+                        </span>
+                        {isSold ? (
+                          <span className="text-[10px] font-black text-slate-400 uppercase">Sold Out</span>
+                        ) : isNext ? (
+                          <TransactionButton
+                            transaction={() => 
+                              needsApprove 
+                                ? approve({ contract: tokenContract, spender: nftDropAddress, amount: currentPriceTokens.toString() }) 
+                                : claimTo({ contract: nftContract, to: account?.address || "", quantity: BigInt(1) })
+                            }
+                            onTransactionConfirmed={() => window.location.reload()}
+                            className="!font-bold !py-1.5 !px-3 !rounded-lg !text-[9px] !bg-blue-600 !text-white uppercase tracking-wider"
+                          >
+                            {needsApprove ? "Approve" : "Mint"}
+                          </TransactionButton>
+                        ) : (
+                          <span className="text-[10px] font-black text-slate-300 uppercase">Locked</span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })}
@@ -310,30 +327,30 @@ export default function Home() {
 
           {/* Quick Links */}
           <div className="grid grid-cols-2 gap-4 mt-6">
-            <a href="https://uniswap.org" target="_blank" rel="noreferrer" className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all text-center">Buy $AVT on Uniswap</a>
-            <a href="https://dexscreener.com" target="_blank" rel="noreferrer" className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all text-center">Chart on DexScreener</a>
+            <a href="https://uniswap.org" target="_blank" rel="noopener noreferrer" className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all text-center">Buy $AVT on Uniswap</a>
+            <a href="https://dexscreener.com" target="_blank" rel="noopener noreferrer" className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all text-center">Chart on DexScreener</a>
           </div>
         </div>
       )}
 
-{/* Footer */}
-<footer className="mt-24 text-center text-slate-400 text-[10px] uppercase tracking-wider border-t border-slate-200 pt-12">
-  <div className="flex justify-center gap-8 mb-4">
-    <button 
-      onClick={() => window.open("https://t.me/1", "_blank", "noopener,noreferrer")}
-      className="hover:text-blue-600 transition-colors uppercase font-bold"
-    >
-      Telegram
-    </button>
-    <button 
-      onClick={() => window.open("https://x.com/1", "_blank", "noopener,noreferrer")}
-      className="hover:text-blue-400 transition-colors uppercase font-bold"
-    >
-      Twitter
-    </button>
-  </div>
-  <p>Vault Protocol &copy; 2026 | Digital Archive System</p>
-</footer>
+      {/* Footer */}
+      <footer className="mt-24 text-center text-slate-400 text-[10px] uppercase tracking-wider border-t border-slate-200 pt-12">
+        <div className="flex justify-center gap-8 mb-4">
+          <button 
+            onClick={() => window.open("https://t.me/your_telegram", "_blank", "noopener,noreferrer")}
+            className="hover:text-blue-600 transition-colors uppercase font-bold text-[10px] tracking-wider bg-transparent border-none cursor-pointer"
+          >
+            Telegram
+          </button>
+          <button 
+            onClick={() => window.open("https://x.com/your_twitter", "_blank", "noopener,noreferrer")}
+            className="hover:text-blue-400 transition-colors uppercase font-bold text-[10px] tracking-wider bg-transparent border-none cursor-pointer"
+          >
+            Twitter
+          </button>
+        </div>
+        <p>Vault Protocol &copy; 2026 | Digital Archive System</p>
+      </footer>
     </main>
   );
 }
