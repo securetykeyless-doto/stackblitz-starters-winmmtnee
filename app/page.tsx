@@ -31,29 +31,39 @@ export default function Home() {
   const { data: totalClaimed } = useReadContract(getTotalClaimedSupply, { contract: nftContract });
   
   const priceInWei = BigInt(750000) * BigInt(10 ** 18);
+  
+  // Кількість NFT, які вже викуплені в контракті (наприклад: 1 або 5)
   const claimedCount = totalClaimed ? Number(totalClaimed) : 0;
 
-  // ДИНАМІЧНЕ ЧИТАННЯ МЕТАДАНИХ NFT З КОНТРАКТУ
-  // Функція автоматично бере метадані для токенів з ID 0, 1, 2, 3
-  const useFetchNFTs = () => {
-    const nft0 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(0) });
-    const nft1 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(1) });
-    const nft2 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(2) });
-    const nft3 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(3) });
+  // ДИНАМІЧНА ЧЕРГА NFT
+  // Порожджуємо масив з 4-х карток навколо поточного стану лічильника мінту.
+  // Показуємо: 2 останні викуплені, 1 поточну активну та 1 наступну заблоковану.
+  const useFetchDynamicNFTs = () => {
+    // Обчислюємо ID токенів, які логічно показати на екрані
+    const currentMintId = claimedCount; // Актуальний ID для мінту
+    
+    const id0 = currentMintId > 1 ? currentMintId - 2 : 0;
+    const id1 = currentMintId > 0 ? (currentMintId > 1 ? currentMintId - 1 : 1) : 1;
+    const id2 = currentMintId > 0 ? (currentMintId > 1 ? currentMintId : 2) : 2;
+    const id3 = currentMintId > 0 ? (currentMintId > 1 ? currentMintId + 1 : 3) : 3;
+
+    const nft0 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(id0) });
+    const nft1 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(id1) });
+    const nft2 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(id2) });
+    const nft3 = useReadContract(getNFT, { contract: nftContract, tokenId: BigInt(id3) });
 
     return [
-      { id: 0, name: nft0.data?.metadata?.name || "Artifact #0", category: "Archived Asset", img: nft0.data?.metadata?.image || "" },
-      { id: 1, name: nft1.data?.metadata?.name || "Artifact #1", category: "Archived Asset", img: nft1.data?.metadata?.image || "" },
-      { id: 2, name: nft2.data?.metadata?.name || "Artifact #2", category: "Archived Asset", img: nft2.data?.metadata?.image || "" },
-      { id: 3, name: nft3.data?.metadata?.name || "Artifact #3", category: "Active Mint", img: nft3.data?.metadata?.image || "" },
+      { id: id0, name: nft0.data?.metadata?.name || `Artifact #${id0}`, category: id0 < currentMintId ? "Archived Asset" : "Next In Queue", img: nft0.data?.metadata?.image || "" },
+      { id: id1, name: nft1.data?.metadata?.name || `Artifact #${id1}`, category: id1 < currentMintId ? "Archived Asset" : "Next In Queue", img: nft1.data?.metadata?.image || "" },
+      { id: id2, name: nft2.data?.metadata?.name || `Artifact #${id2}`, category: id2 < currentMintId ? "Archived Asset" : (id2 === currentMintId ? "Active Mint" : "Locked Asset"), img: nft2.data?.metadata?.image || "" },
+      { id: id3, name: nft3.data?.metadata?.name || `Artifact #${id3}`, category: id3 === currentMintId ? "Active Mint" : "Locked Asset", img: nft3.data?.metadata?.image || "" },
     ];
   };
 
-  const artifacts = useFetchNFTs();
+  const artifacts = useFetchDynamicNFTs();
 
-  // Функція для конвертації IPFS посилань (ipfs://...) у звичайні HTTP-посилання для відображення в браузері
   const getImageUrl = (ipfsUrl: string) => {
-    if (!ipfsUrl) return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400"; // Заглушка, поки вантажиться
+    if (!ipfsUrl) return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400";
     if (ipfsUrl.startsWith("ipfs://")) {
       return ipfsUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
     }
@@ -98,17 +108,19 @@ export default function Home() {
       {activeTab === "vault" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {artifacts.map((art) => {
-            const isSold = art.id < 3;
-            const isNext = art.id === 3;
+            // Динамічна перевірка статусу на основі даних з блокчейну
+            const isSold = art.id < claimedCount;          // Токен вже викуплено
+            const isNext = art.id === claimedCount;         // Це саме той єдиний токен, який можна мінтити зараз
             const needsApprove = !currentAllowance || currentAllowance < priceInWei;
+
             return (
-              <div key={art.id} className={`bg-white border border-slate-200 rounded-[24px] p-4 shadow-sm ${isSold ? 'opacity-60' : isNext ? 'ring-2 ring-blue-500 shadow-xl' : 'opacity-40'}`}>
+              <div key={art.id} className={`bg-white border border-slate-200 rounded-[24px] p-4 shadow-sm transition-all duration-300 ${isSold ? 'opacity-60 grayscale-[0.2]' : isNext ? 'ring-2 ring-blue-500 shadow-xl scale-[1.01]' : 'opacity-40'}`}>
                 <div className="relative aspect-square mb-4 rounded-xl overflow-hidden bg-slate-100">
                   <img src={getImageUrl(art.img)} alt={art.name} className="w-full h-full object-cover" />
                   {isSold && <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center"><span className="text-white font-black text-sm border-2 border-white px-3 py-0.5 rotate-[-10deg]">ARCHIVED</span></div>}
                 </div>
                 <h3 className="text-md font-black uppercase text-slate-800 leading-none truncate">{art.name}</h3>
-                <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 mb-4">{art.category}</p>
+                <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 mb-4">ID #{art.id} — {art.category}</p>
                 <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
                   <span className="font-mono text-xs font-bold">750k $AVT</span>
                   {isSold ? <span className="text-[10px] font-black text-slate-400 uppercase">Sold Out</span> : isNext ? (
