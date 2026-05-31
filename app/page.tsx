@@ -352,13 +352,13 @@ export default function Home() {
       <footer className="mt-24 text-center text-slate-400 text-[10px] uppercase tracking-wider border-t border-slate-200 pt-12">
         <div className="flex justify-center gap-8 mb-4">
           <button 
-            onClick={() => window.open("https://t.me/your_telegram", "_blank", "noopener,noreferrer")}
+            onClick={() => window.open("https://t.me/Artifact_vault", "_blank", "noopener,noreferrer")}
             className="hover:text-blue-600 transition-colors uppercase font-bold text-[10px] tracking-wider bg-transparent border-none cursor-pointer"
           >
             Telegram
           </button>
           <button 
-            onClick={() => window.open("https://x.com/your_twitter", "_blank", "noopener,noreferrer")}
+            onClick={() => window.open("https://x.com/ArtifactVaault1", "_blank", "noopener,noreferrer")}
             className="hover:text-blue-400 transition-colors uppercase font-bold text-[10px] tracking-wider bg-transparent border-none cursor-pointer"
           >
             Twitter
