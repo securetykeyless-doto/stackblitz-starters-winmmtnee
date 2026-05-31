@@ -14,6 +14,11 @@ export default function Home() {
 
   useEffect(() => { setIsMounted(true); }, []);
 
+  // ==========================================
+  // НАЛАШТУВАННЯ ЦІНИ (ЗМІНЮЙ ТУТ ПРИ ОНОВЛЕННІ В THIRDWEB)
+  const ACTIVE_MINT_PRICE = 60000; // Просто впиши сюди нову ціну, яку поставив у контракті
+  // ==========================================
+
   // CONTRACT ADDRESSES
   const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
@@ -61,6 +66,11 @@ export default function Home() {
       return ipfsUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
     }
     return ipfsUrl;
+  };
+
+  // Допоміжна функція для гарного відображення тисяч (наприклад, 60000 -> 60k)
+  const formatPriceLabel = (price: number) => {
+    return price >= 1000 ? `${price / 1000}k` : price.toString();
   };
 
   if (!isMounted) {
@@ -125,16 +135,21 @@ export default function Home() {
                   <h3 className="text-md font-black uppercase text-slate-800 leading-none truncate">{art.name}</h3>
                   <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 mb-4">ID #{art.id} — {art.category}</p>
                   
-                  {/* DYNAMIC PRICE LOGIC PER CARD */}
+                  {/* DYNAMIC PRICE LOGIC WITH MAIN VARIABLE */}
                   {(() => {
-                    const currentPriceTokens = art.id < 5 ? 750000 : 200000;
+                    // Якщо картка вже продана в минулому: перші 5 були по 750k, наступні по 200k.
+                    // Якщо картка активна для мінту зараз або заблокована попереду — ставимо нову глобальну ціну.
+                    const currentPriceTokens = isSold 
+                      ? (art.id < 5 ? 750000 : 200000) 
+                      : ACTIVE_MINT_PRICE;
+
                     const currentPriceWei = BigInt(currentPriceTokens) * BigInt(10 ** 18);
                     const needsApprove = !currentAllowance || currentAllowance < currentPriceWei;
 
                     return (
                       <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
                         <span className="font-mono text-xs font-bold">
-                          {art.id < 5 ? "750k" : "200k"} $AVT
+                          {formatPriceLabel(currentPriceTokens)} $AVT
                         </span>
                         {isSold ? (
                           <span className="text-[10px] font-black text-slate-400 uppercase">Sold Out</span>
