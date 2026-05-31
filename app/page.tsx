@@ -358,7 +358,7 @@ export default function Home() {
             Telegram
           </button>
           <button 
-            onClick={() => window.open("https://x.com/ArtifactVaault1", "_blank", "noopener,noreferrer")}
+            onClick={() => window.open("https://x.com/ArtifactVault1", "_blank", "noopener,noreferrer")}
             className="hover:text-blue-400 transition-colors uppercase font-bold text-[10px] tracking-wider bg-transparent border-none cursor-pointer"
           >
             Twitter
