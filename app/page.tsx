@@ -316,14 +316,24 @@ export default function Home() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="mt-24 text-center text-slate-400 text-[10px] uppercase tracking-wider border-t border-slate-200 pt-12">
-        <div className="flex justify-center gap-8 mb-4">
-          <a href="https://t.me/Artifact_vault" className="hover:text-blue-600 transition-colors">Telegram</a>
-          <a href="https://x.com/ArtifactVault1" className="hover:text-blue-400 transition-colors">Twitter</a>
-        </div>
-        <p>Vault Protocol &copy; 2026 | Digital Archive System</p>
-      </footer>
+{/* Footer */}
+<footer className="mt-24 text-center text-slate-400 text-[10px] uppercase tracking-wider border-t border-slate-200 pt-12">
+  <div className="flex justify-center gap-8 mb-4">
+    <button 
+      onClick={() => window.open("https://t.me/1", "_blank", "noopener,noreferrer")}
+      className="hover:text-blue-600 transition-colors uppercase font-bold"
+    >
+      Telegram
+    </button>
+    <button 
+      onClick={() => window.open("https://x.com/1", "_blank", "noopener,noreferrer")}
+      className="hover:text-blue-400 transition-colors uppercase font-bold"
+    >
+      Twitter
+    </button>
+  </div>
+  <p>Vault Protocol &copy; 2026 | Digital Archive System</p>
+</footer>
     </main>
   );
 }
