@@ -109,17 +109,17 @@ export default function Home() {
           <p className="text-xs text-blue-700 bg-blue-50 py-2 px-4 rounded-xl font-bold uppercase tracking-wide inline-block">🎮 Gaming Utility Integration in Progress</p>
         </div>
 
-        {/* ВИПРАВЛЕНИЙ БЛОК КОНТРАКТУ */}
-        <div 
-          className="inline-block bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-mono cursor-pointer hover:bg-slate-800 transition-colors"
-          onClick={() => {
-            navigator.clipboard.writeText(tokenAddress);
-            alert("Contract address copied!");
-          }}
-          title="Click to copy address"
-        >
-          Contract: <span className="text-blue-300">{tokenAddress.slice(0, 8)}...{tokenAddress.slice(-6)}</span>
-        </div>
+{/* ВИПРАВЛЕНИЙ БЛОК КОНТРАКТУ */}
+<div 
+  className="inline-block bg-slate-900 text-white px-3 py-2 rounded-xl text-[10px] sm:text-xs font-mono cursor-pointer hover:bg-slate-800 transition-colors"
+  onClick={() => {
+    navigator.clipboard.writeText(tokenAddress);
+    alert("Contract address copied!");
+  }}
+  title="Click to copy address"
+>
+  Contract: <span className="text-blue-300">{tokenAddress}</span>
+</div>
       </div>
 
       {activeTab === "vault" && (
