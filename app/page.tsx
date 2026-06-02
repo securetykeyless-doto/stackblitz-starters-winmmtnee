@@ -140,19 +140,40 @@ export default function Home() {
         </div>
       )}
 
-      {activeTab === "market" && (
+{activeTab === "market" && (
         <div className="bg-white border border-slate-200 rounded-[24px] p-8 max-w-3xl mx-auto shadow-sm">
           <h2 className="text-2xl font-black uppercase italic mb-8 text-center">Market Gallery</h2>
           <div className="space-y-4">
-            {Array.from({ length: claimedCount > 0 ? claimedCount : 1 }).map((_, i) => (
-              <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-slate-200 rounded-xl overflow-hidden"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200" className="w-full h-full object-cover" /></div>
-                  <div><h4 className="font-bold text-sm text-slate-900">Artifact #{i}</h4><p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Archived</p></div>
+            {Array.from({ length: claimedCount > 0 ? claimedCount : 1 }).map((_, i) => {
+              // Логіка цін для демонстрації росту
+              const mintPriceTokens = 750000;
+              const originalUsd = 4.5; 
+              const currentUsd = 45.0; 
+              
+              return (
+                <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-slate-200 rounded-xl overflow-hidden border border-slate-200">
+                      <img 
+                        src={artifacts[i]?.img || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200"} 
+                        alt={`Artifact ${i}`} 
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-900">Artifact #{i}</h4>
+                      <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-lg inline-block">Archived</p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right font-mono">
+                    <p className="text-[9px] text-slate-400 uppercase line-through decoration-slate-400">Minted: ${originalUsd}</p>
+                    <p className="text-sm font-black text-blue-600">Value: ${currentUsd}</p>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">({mintPriceTokens / 1000}k $AVT)</p>
+                  </div>
                 </div>
-                <div className="text-right font-mono"><p className="text-[9px] text-slate-400 uppercase">Orig: {formatPriceLabel(750000)} AVT</p><p className="text-sm font-black text-blue-600">{formatPriceLabel(750000 + i * 50000)} AVT</p></div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
