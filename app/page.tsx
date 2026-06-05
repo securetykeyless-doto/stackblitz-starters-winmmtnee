@@ -15,7 +15,7 @@ export default function Home() {
   useEffect(() => { setIsMounted(true); }, []);
 
   const ACTIVE_MINT_PRICE = 750000;
-  const tokenAddress = "0x0CaA5E06e6335d2e29c6212CF851315bA2105C82";
+  const tokenAddress = "0x6dBCa99e0dCb527D133D39E44ec8Bfbe95461493";
   const nftDropAddress = "0xCF0FCDBD6180245A70b2d0797386D36FC6712490";
   
   const tokenContract = getContract({ client, chain, address: tokenAddress });
