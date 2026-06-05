@@ -19,7 +19,7 @@ function NFTCard({ id, contract, nftDropAddress, tokenContract, claimedCount, cu
   const { data: nft, isLoading } = useReadContract(getNFT, { contract: contract, tokenId: BigInt(id) });
   const isSold = id < claimedCount;
   const isNext = id === claimedCount;
-  const currentPriceTokens = isSold ? (id < 5 ? 750000 : 200000) : ACTIVE_MINT_PRICE;
+  const currentPriceTokens = isSold ? (id < 10 ? 750000 : 200000) : ACTIVE_MINT_PRICE;
   const currentPriceWei = BigInt(currentPriceTokens) * BigInt(10 ** 18);
   const needsApprove = !currentAllowance || currentAllowance < currentPriceWei;
 
